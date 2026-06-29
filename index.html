@@ -5,390 +5,381 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Miso — What's for dinner?</title>
   <meta name="description" content="A meal planner that starts with what's already in your kitchen." />
-
-  <!-- Preload critical fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
-
-  <!-- GSAP + ScrollTrigger -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
-
-  <!-- Lenis smooth scroll -->
   <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-
-  <!-- Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Steam particle canvas (always ambient) -->
-  <canvas id="steam-canvas"></canvas>
+<!-- ── AMBIENT LAYER ── -->
+<canvas id="steam-canvas" aria-hidden="true"></canvas>
+<div id="cursor-glow" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"><div class="cursor-dot"></div></div>
 
-  <!-- ─── PRELOADER ─── -->
-  <div id="preloader">
-    <div class="preloader-inner">
-      <div class="wordmark">miso</div>
-      <div class="loading-label">Loading your kitchen...</div>
-      <div class="progress-bar"><div class="progress-fill"></div></div>
-    </div>
+<!-- ── PRELOADER ── -->
+<div id="preloader">
+  <div class="pre-inner">
+    <div class="pre-logo">miso</div>
+    <div class="pre-sub">Loading your kitchen...</div>
+    <div class="pre-bar"><div class="pre-fill"></div></div>
   </div>
+</div>
 
-  <!-- ─── SCENE 1: THE HOOK ─── -->
-  <section id="scene-1" class="scene scene--dark">
-    <div class="scene-inner">
-      <div class="hero-type">
-        <h1 class="display-type" id="hero-question">What's for dinner?</h1>
-        <p class="sub-hero" id="hero-sub">
-          Miso answers it.<span class="pulse-word"> Every.</span><span class="pulse-word"> Single.</span><span class="pulse-word"> Week.</span>
-        </p>
-      </div>
-      <a href="#scene-3" class="cta-primary" id="hero-cta">
-        Start Planning Free <span class="cta-arrow">→</span>
+<main>
+
+  <!-- ══ SCENE 1: HERO ══ -->
+  <section id="s-hero">
+    <div class="hero-atm" id="hero-atm"></div>
+    <div class="hero-content" id="hero-content">
+      <h1 class="hero-title" id="hero-title">
+        <span class="ht-line">What's for</span>
+        <span class="ht-line">dinner?</span>
+      </h1>
+      <p class="hero-line" id="hero-line">
+        Miso answers it.<em> Every.</em><em> Single.</em><em> Week.</em>
+      </p>
+      <a href="#s-reveal" class="cta" id="hero-cta">
+        <span>Start Planning Free</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 6l5 4-5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
-    <div class="scroll-nudge" id="scroll-nudge">
-      <span>↓</span>
-    </div>
+    <div class="scroll-ind" id="scroll-ind">scroll</div>
   </section>
 
-  <!-- ─── SCENE 2: THE PROBLEM ─── -->
-  <section id="scene-2" class="scene scene--dark scene--kitchen">
-    <div class="kitchen-env" id="kitchen-env">
-      <div class="kitchen-bg"></div>
-      <div class="kitchen-counter"></div>
-      <div class="kitchen-fridge"></div>
+  <!-- ══ SCENE 2: PROBLEM ══ -->
+  <section id="s-problem">
+    <div class="fridge-beam" id="fridge-beam">
+      <div class="fridge-door"></div>
+      <div class="fridge-spill"></div>
     </div>
-    <div class="scene-inner scene-inner--left">
-      <div class="problem-lines">
-        <p class="problem-line" data-delay="0">You open the fridge.</p>
-        <p class="problem-line" data-delay="0.4">Nothing goes together.</p>
-        <p class="problem-line problem-pause" data-delay="1.0">You ask your partner.</p>
-        <p class="problem-line" data-delay="1.4">They shrug.</p>
-        <p class="problem-line problem-pause" data-delay="2.0">You order in.</p>
-        <p class="problem-line" data-delay="2.4">Again.</p>
+    <div class="problem-content">
+      <div class="problem-lines" id="problem-lines">
+        <p class="pl">You open the fridge.</p>
+        <p class="pl">Nothing goes together.</p>
+        <p class="pl pl--gap">You ask your partner.</p>
+        <p class="pl">They shrug.</p>
+        <p class="pl pl--gap">You order in.</p>
+        <p class="pl">Again.</p>
       </div>
-      <div class="problem-conclusion">
-        <p class="conclusion-line">Your pantry is full.</p>
-        <p class="conclusion-line">Your week is empty.</p>
+      <div class="problem-pivot" id="problem-pivot">
+        <span>Your pantry is full.</span>
+        <span>Your week is empty.</span>
       </div>
     </div>
-    <div class="scene-footer-label">
-      There's a smarter way to feed your family.&nbsp; ↓
-    </div>
+    <div class="s-footer-label">There's a smarter way to feed your family. ↓</div>
   </section>
 
-  <!-- ─── SCENE 3: THE REVEAL ─── -->
-  <section id="scene-3" class="scene scene--light">
-    <div class="scene-inner scene-inner--center">
+  <!-- ══ SCENE 3: REVEAL ══ -->
+  <section id="s-reveal">
+    <div class="reveal-copy" id="reveal-copy">
       <h2 class="reveal-title">Meet Miso.</h2>
       <p class="reveal-sub">A meal planner that starts with what's already in your kitchen.</p>
-      <div class="screenshot-stage" id="screenshot-a-stage">
-        <div class="screenshot-wrapper" id="screenshot-a" data-tilt>
-          <div class="screenshot-placeholder">
-            <div class="placeholder-ui">
-              <div class="ui-header">
-                <span class="ui-label">Weekly Planner</span>
-                <span class="ui-date">Week of Jun 30</span>
-              </div>
-              <div class="ui-grid">
-                <div class="ui-day">
-                  <div class="ui-day-label">Mon</div>
-                  <div class="ui-meal ui-meal--filled">Chicken Tikka Masala</div>
-                  <div class="ui-meal ui-meal--filled">Quinoa Salad</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Tue</div>
-                  <div class="ui-meal ui-meal--filled">Pasta Arrabiata</div>
-                  <div class="ui-meal ui-meal--empty">+ Add</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Wed</div>
-                  <div class="ui-meal ui-meal--filled">Miso Ramen</div>
-                  <div class="ui-meal ui-meal--filled">Green Thai Curry</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Thu</div>
-                  <div class="ui-meal ui-meal--filled">Dahl &amp; Rice</div>
-                  <div class="ui-meal ui-meal--empty">+ Add</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Fri</div>
-                  <div class="ui-meal ui-meal--filled">Soba Noodles</div>
-                  <div class="ui-meal ui-meal--filled">Stir Fry</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Sat</div>
-                  <div class="ui-meal ui-meal--ai">✦ Suggest</div>
-                  <div class="ui-meal ui-meal--filled">Roast Chicken</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Sun</div>
-                  <div class="ui-meal ui-meal--filled">Shakshuka</div>
-                  <div class="ui-meal ui-meal--filled">Soup &amp; Bread</div>
-                </div>
-              </div>
-            </div>
+    </div>
+    <div class="app-stage" id="app-stage-a">
+      <!-- ★ APP MOCKUP A: Full weekly planner -->
+      <div class="app app--wide" id="app-a" data-tilt>
+        <div class="app-head">
+          <button class="app-nav">‹</button>
+          <div class="app-head-mid">
+            <div class="app-week-lbl">This Week</div>
+            <div class="app-date-rng">Jun 30 – Jul 6</div>
           </div>
-          <div class="screenshot-glare"></div>
+          <button class="app-nav">›</button>
+        </div>
+        <div class="app-toolbar">
+          <button class="app-ai-btn">✦ Smart Fill</button>
+          <button class="app-tool-btn">+ Meal</button>
+          <button class="app-tool-btn">···</button>
+        </div>
+        <div class="app-day-row app-day-row--labels">
+          <div class="day-cell"><span class="day-nm">Mon</span><span class="day-dt">30</span></div>
+          <div class="day-cell"><span class="day-nm">Tue</span><span class="day-dt">1</span></div>
+          <div class="day-cell"><span class="day-nm">Wed</span><span class="day-dt">2</span></div>
+          <div class="day-cell"><span class="day-nm">Thu</span><span class="day-dt">3</span></div>
+          <div class="day-cell"><span class="day-nm">Fri</span><span class="day-dt">4</span></div>
+          <div class="day-cell"><span class="day-nm">Sat</span><span class="day-dt">5</span></div>
+          <div class="day-cell"><span class="day-nm">Sun</span><span class="day-dt">6</span></div>
+        </div>
+        <div class="app-section-lbl">Dinner</div>
+        <div class="app-meal-row">
+          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">35 min</span></div><div class="mc-emoji">🍛</div><div class="mc-name">Chicken Tikka Masala</div><div class="mc-tags"><span class="mc-tag">Indian</span><span class="mc-tag mc-tag--spice">🌶</span></div></div>
+          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">25 min</span></div><div class="mc-emoji">🍝</div><div class="mc-name">Pasta Arrabiata</div><div class="mc-tags"><span class="mc-tag">Italian</span></div></div>
+          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">50 min</span></div><div class="mc-emoji">🍜</div><div class="mc-name">Miso Ramen</div><div class="mc-tags"><span class="mc-tag">Japanese</span></div></div>
+          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">20 min</span></div><div class="mc-emoji">🫕</div><div class="mc-name">Dahl &amp; Rice</div><div class="mc-tags"><span class="mc-tag">Indian</span></div></div>
+          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">30 min</span></div><div class="mc-emoji">🥩</div><div class="mc-name">Steak &amp; Greens</div><div class="mc-tags"><span class="mc-tag">Simple</span></div></div>
+          <div class="meal-card mc--dinner mc--ai"><div class="mc-ai-badge">✦</div><div class="mc-emoji">🍲</div><div class="mc-name">AI Suggest</div><div class="mc-tags"><span class="mc-tag mc-tag--ai">based on pantry</span></div></div>
+          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">15 min</span></div><div class="mc-emoji">🥚</div><div class="mc-name">Shakshuka</div><div class="mc-tags"><span class="mc-tag">Middle Eastern</span></div></div>
+        </div>
+        <div class="app-section-lbl">Lunch</div>
+        <div class="app-meal-row">
+          <div class="meal-card mc--lunch"><div class="mc-top"><span class="mc-time">10 min</span></div><div class="mc-emoji">🥗</div><div class="mc-name">Quinoa Bowl</div><div class="mc-tags"><span class="mc-tag">Healthy</span></div></div>
+          <div class="meal-card mc--add">+ Add</div>
+          <div class="meal-card mc--lunch"><div class="mc-top"><span class="mc-time">10 min</span></div><div class="mc-emoji">🥙</div><div class="mc-name">Chicken Wrap</div><div class="mc-tags"><span class="mc-tag">Quick</span></div></div>
+          <div class="meal-card mc--add">+ Add</div>
+          <div class="meal-card mc--lunch"><div class="mc-top"><span class="mc-time">15 min</span></div><div class="mc-emoji">🥪</div><div class="mc-name">Avocado Toast</div><div class="mc-tags"></div></div>
+          <div class="meal-card mc--add">+ Add</div>
+          <div class="meal-card mc--add">+ Add</div>
+        </div>
+        <div class="app-status-bar">
+          <div class="app-stat"><span class="stat-i">🛒</span>11 to buy</div>
+          <div class="app-stat-div">·</div>
+          <div class="app-stat"><span class="stat-i">🏠</span>24 in pantry</div>
+          <div class="app-sync">✓ Synced just now</div>
         </div>
       </div>
+      <div class="app-glow" aria-hidden="true"></div>
     </div>
   </section>
 
-  <!-- ─── SCENE 4: CLUSTER A — THE PLANNER ─── -->
-  <section id="scene-4" class="scene scene--light scene--split">
-    <div class="split-left">
-      <div class="screenshot-wrapper screenshot-wrapper--panel" id="screenshot-b" data-tilt>
-        <div class="screenshot-placeholder screenshot-placeholder--panel">
-          <div class="placeholder-ui" id="planner-ui">
-            <div class="ui-header">
-              <span class="ui-label">Your Week</span>
-              <span class="ui-tag">Sunday sorted</span>
-            </div>
-            <div class="ui-grid" id="planner-grid">
-              <!-- Populated by JS -->
-            </div>
+  <!-- ══ SCENE 4: PLANNER FEATURE ══ -->
+  <section id="s-planner" class="s-split">
+    <div class="split-app" id="split-app-planner">
+      <div class="app app--panel" id="app-b" data-tilt>
+        <div class="app-head">
+          <button class="app-nav">‹</button>
+          <div class="app-head-mid">
+            <div class="app-week-lbl">Your Week</div>
+            <div class="app-date-rng">Planned Sunday</div>
           </div>
+          <button class="app-nav">›</button>
         </div>
-        <div class="screenshot-glare"></div>
+        <div class="app-section-lbl">Dinner</div>
+        <div class="app-meal-row app-meal-row--panel" id="planner-b-dinner">
+          <!-- Filled by JS animation -->
+        </div>
+        <div class="app-section-lbl">Lunch</div>
+        <div class="app-meal-row app-meal-row--panel" id="planner-b-lunch">
+          <!-- Filled by JS animation -->
+        </div>
+        <div class="app-status-bar">
+          <div class="app-stat app-stat--highlight"><span class="stat-i">✦</span>All meals planned</div>
+          <div class="app-sync">↻ Building your list...</div>
+        </div>
       </div>
+      <div class="app-glow" aria-hidden="true"></div>
     </div>
-    <div class="split-right">
-      <h2 class="cluster-title">Your week.<br/>Sorted Sunday.</h2>
-      <p class="cluster-sub">Miso builds a full weekly menu around what you have — or what you want. Swap any dish in one tap.</p>
-      <ul class="proof-points" id="proof-a">
-        <li class="proof-point" data-delay="0">
-          <span class="proof-dot"></span>Plans around pantry stock — nothing wasted
-        </li>
-        <li class="proof-point" data-delay="0.15">
-          <span class="proof-dot"></span>450+ dishes across 15 cuisines
-        </li>
-        <li class="proof-point" data-delay="0.3">
-          <span class="proof-dot"></span>Drag, swap, or lock any meal
-        </li>
+    <div class="split-copy" id="split-copy-planner">
+      <h2 class="feat-title">Your week.<br>Sorted Sunday.</h2>
+      <p class="feat-sub">Miso builds a full weekly menu around what you have — or what you want. Swap any dish in one tap.</p>
+      <ul class="proof-list" id="proof-a">
+        <li><span class="proof-dot"></span>Plans around pantry stock — nothing wasted</li>
+        <li><span class="proof-dot"></span>450+ dishes across 15 cuisines</li>
+        <li><span class="proof-dot"></span>Drag, swap, or lock any meal</li>
       </ul>
     </div>
   </section>
 
-  <!-- ─── SCENE 5: CLUSTER B — SHOPPING LIST ─── -->
-  <section id="scene-5" class="scene scene--dark scene--overhead">
-    <div class="counter-texture"></div>
-    <div class="scene-inner">
-      <div class="overhead-layout">
-        <div class="screenshot-wrapper screenshot-wrapper--overhead" id="screenshot-c" data-tilt>
-          <div class="screenshot-placeholder">
-            <div class="placeholder-ui">
-              <div class="ui-header">
-                <span class="ui-label">Shopping List</span>
-                <div class="ui-tabs">
-                  <span class="ui-tab ui-tab--active">By Day</span>
-                  <span class="ui-tab">By Aisle</span>
-                </div>
-              </div>
-              <div class="ui-list">
-                <div class="ui-list-group">
-                  <div class="ui-list-day">Monday</div>
-                  <div class="ui-list-item"><span class="ui-check checked">✓</span> Chicken thighs (500g)</div>
-                  <div class="ui-list-item"><span class="ui-check">○</span> Cherry tomatoes</div>
-                  <div class="ui-list-item"><span class="ui-check">○</span> Fresh coriander</div>
-                </div>
-                <div class="ui-list-group">
-                  <div class="ui-list-day">Tuesday</div>
-                  <div class="ui-list-item"><span class="ui-check">○</span> Rigatoni (400g)</div>
-                  <div class="ui-list-item"><span class="ui-check checked">✓</span> Tinned tomatoes ✦ in pantry</div>
-                </div>
-                <div class="ui-list-group">
-                  <div class="ui-list-day">Wednesday</div>
-                  <div class="ui-list-item"><span class="ui-check">○</span> Miso paste (white)</div>
-                  <div class="ui-list-item"><span class="ui-check">○</span> Ramen noodles</div>
-                  <div class="ui-list-item"><span class="ui-check">○</span> Soft boiled eggs ×2</div>
-                </div>
-              </div>
+  <!-- ══ SCENE 5: SHOPPING ══ -->
+  <section id="s-shopping">
+    <div class="shop-layout">
+      <div class="shop-copy" id="shop-copy">
+        <h2 class="feat-title feat-title--light">Only buy what<br>you actually need.</h2>
+        <ul class="proof-list proof-list--light" id="proof-b">
+          <li><span class="proof-dot"></span>Pantry items auto-excluded</li>
+          <li><span class="proof-dot"></span>Sorted by day or supermarket aisle</li>
+          <li><span class="proof-dot"></span>Shared across your whole household</li>
+        </ul>
+      </div>
+      <div class="shop-app" id="shop-app">
+        <div class="app app--list" id="app-c" data-tilt>
+          <div class="app-head">
+            <div class="app-head-mid" style="text-align:left">
+              <div class="app-week-lbl">Shopping List</div>
+              <div class="app-date-rng">Jun 30 – Jul 6</div>
+            </div>
+            <div class="list-tabs">
+              <button class="list-tab list-tab--on">By Day</button>
+              <button class="list-tab">By Aisle</button>
             </div>
           </div>
-          <div class="screenshot-glare"></div>
+          <div class="list-body">
+            <div class="list-group">
+              <div class="list-day-lbl">Monday · Chicken Tikka Masala</div>
+              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Chicken thighs, 500g</div></div>
+              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Cherry tomatoes, punnet</div></div>
+              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Fresh coriander, 1 bunch</div></div>
+              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">Garam masala</div><span class="li-badge">in pantry</span></div>
+              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">Tinned tomatoes</div><span class="li-badge">in pantry</span></div>
+            </div>
+            <div class="list-group">
+              <div class="list-day-lbl">Tuesday · Pasta Arrabiata</div>
+              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Rigatoni, 400g</div></div>
+              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Fresh parsley</div></div>
+              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">Garlic, olive oil, chilli</div><span class="li-badge">in pantry</span></div>
+            </div>
+            <div class="list-group">
+              <div class="list-day-lbl">Wednesday · Miso Ramen</div>
+              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Ramen noodles, 2 portions</div></div>
+              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Soft-boiled eggs ×4</div></div>
+              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">White miso paste</div><span class="li-badge">in pantry</span></div>
+            </div>
+          </div>
+          <div class="app-status-bar">
+            <div class="app-stat app-stat--highlight"><span class="stat-i">🛒</span>11 items to buy</div>
+            <div class="app-stat-div">·</div>
+            <div class="app-stat app-stat--saved"><span class="stat-i">🏠</span>8 saved from pantry</div>
+          </div>
         </div>
-        <div class="overhead-copy">
-          <h2 class="cluster-title cluster-title--light">Only buy what you actually need.</h2>
-          <ul class="proof-points" id="proof-b">
-            <li class="proof-point proof-point--light" data-delay="0">
-              <span class="proof-dot"></span>Pantry items automatically excluded
-            </li>
-            <li class="proof-point proof-point--light" data-delay="0.15">
-              <span class="proof-dot"></span>Organised by day or by supermarket aisle
-            </li>
-            <li class="proof-point proof-point--light" data-delay="0.3">
-              <span class="proof-dot"></span>Shared with your whole household
-            </li>
-          </ul>
-        </div>
+        <div class="app-glow" aria-hidden="true"></div>
       </div>
     </div>
   </section>
 
-  <!-- ─── SCENE 6: CLUSTER C — THE HOUSEHOLD ─── -->
-  <section id="scene-6" class="scene scene--light">
-    <div class="scene-inner scene-inner--center">
-      <div class="dual-device-stage">
-        <div class="screenshot-wrapper screenshot-wrapper--device screenshot-wrapper--device-left" id="screenshot-d" data-tilt>
-          <div class="screenshot-placeholder">
-            <div class="placeholder-ui">
-              <div class="ui-header">
-                <span class="ui-label">Alex's View</span>
-                <span class="ui-avatar">A</span>
-              </div>
-              <div class="ui-grid ui-grid--small">
-                <div class="ui-day">
-                  <div class="ui-day-label">Mon</div>
-                  <div class="ui-meal ui-meal--filled ui-meal--sm">Tikka Masala</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Tue</div>
-                  <div class="ui-meal ui-meal--filled ui-meal--sm">Pasta</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Wed</div>
-                  <div class="ui-meal ui-meal--locked ui-meal--sm">🔒 Ramen</div>
-                </div>
-              </div>
-              <div class="ui-sync-badge">✓ Synced</div>
-            </div>
+  <!-- ══ SCENE 6: HOUSEHOLD ══ -->
+  <section id="s-household">
+    <div class="household-layout">
+      <div class="household-app household-app--left" id="app-d-wrap">
+        <div class="app app--device" id="app-d" data-tilt>
+          <div class="app-head">
+            <div class="device-owner"><span class="owner-avatar">A</span><span class="owner-name">Alex's view</span></div>
+            <div class="app-sync app-sync--inline">✓ Live</div>
           </div>
-          <div class="screenshot-glare"></div>
-        </div>
-        <div class="dual-device-copy">
-          <h2 class="cluster-title">One kitchen.<br/>One plan.</h2>
-          <p class="cluster-sub">Everyone on the same page.</p>
-          <ul class="proof-points" id="proof-c">
-            <li class="proof-point" data-delay="0">
-              <span class="proof-dot"></span>Real-time sync across devices
-            </li>
-            <li class="proof-point" data-delay="0.15">
-              <span class="proof-dot"></span>Lock meals only you can change
-            </li>
-            <li class="proof-point" data-delay="0.3">
-              <span class="proof-dot"></span>Shared pantry, shared list
-            </li>
-          </ul>
-        </div>
-        <div class="screenshot-wrapper screenshot-wrapper--device screenshot-wrapper--device-right" id="screenshot-e" data-tilt>
-          <div class="screenshot-placeholder">
-            <div class="placeholder-ui">
-              <div class="ui-header">
-                <span class="ui-label">Sam's View</span>
-                <span class="ui-avatar ui-avatar--alt">S</span>
-              </div>
-              <div class="ui-grid ui-grid--small">
-                <div class="ui-day">
-                  <div class="ui-day-label">Mon</div>
-                  <div class="ui-meal ui-meal--filled ui-meal--sm">Tikka Masala</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Tue</div>
-                  <div class="ui-meal ui-meal--filled ui-meal--sm">Pasta</div>
-                </div>
-                <div class="ui-day">
-                  <div class="ui-day-label">Wed</div>
-                  <div class="ui-meal ui-meal--locked ui-meal--sm">🔒 Ramen</div>
-                </div>
-              </div>
-              <div class="ui-sync-badge">✓ Synced</div>
-            </div>
+          <div class="app-section-lbl">This Week</div>
+          <div class="app-meal-col">
+            <div class="device-meal-card"><div class="dmc-day">Mon</div><div class="dmc-emoji">🍛</div><div class="dmc-name">Tikka Masala</div></div>
+            <div class="device-meal-card"><div class="dmc-day">Tue</div><div class="dmc-emoji">🍝</div><div class="dmc-name">Pasta Arrabiata</div></div>
+            <div class="device-meal-card dmc--locked"><div class="dmc-day">Wed</div><div class="dmc-emoji">🍜</div><div class="dmc-name">Ramen 🔒</div></div>
+            <div class="device-meal-card"><div class="dmc-day">Thu</div><div class="dmc-emoji">🫕</div><div class="dmc-name">Dahl &amp; Rice</div></div>
           </div>
-          <div class="screenshot-glare"></div>
+          <div class="app-status-bar">
+            <div class="app-stat app-stat--highlight">✓ In sync with Sam</div>
+          </div>
         </div>
+        <div class="app-glow" aria-hidden="true"></div>
+      </div>
+      <div class="household-copy" id="household-copy">
+        <h2 class="feat-title">One kitchen.<br>One plan.</h2>
+        <p class="feat-sub">Everyone on the same page.</p>
+        <ul class="proof-list" id="proof-c">
+          <li><span class="proof-dot"></span>Real-time sync across devices</li>
+          <li><span class="proof-dot"></span>Lock meals only you can change</li>
+          <li><span class="proof-dot"></span>Shared pantry, shared list</li>
+        </ul>
+      </div>
+      <div class="household-app household-app--right" id="app-e-wrap">
+        <div class="app app--device" id="app-e" data-tilt>
+          <div class="app-head">
+            <div class="device-owner"><span class="owner-avatar owner-avatar--alt">S</span><span class="owner-name">Sam's view</span></div>
+            <div class="app-sync app-sync--inline">✓ Live</div>
+          </div>
+          <div class="app-section-lbl">This Week</div>
+          <div class="app-meal-col">
+            <div class="device-meal-card"><div class="dmc-day">Mon</div><div class="dmc-emoji">🍛</div><div class="dmc-name">Tikka Masala</div></div>
+            <div class="device-meal-card"><div class="dmc-day">Tue</div><div class="dmc-emoji">🍝</div><div class="dmc-name">Pasta Arrabiata</div></div>
+            <div class="device-meal-card dmc--locked"><div class="dmc-day">Wed</div><div class="dmc-emoji">🍜</div><div class="dmc-name">Ramen 🔒</div></div>
+            <div class="device-meal-card"><div class="dmc-day">Thu</div><div class="dmc-emoji">🫕</div><div class="dmc-name">Dahl &amp; Rice</div></div>
+          </div>
+          <div class="app-status-bar">
+            <div class="app-stat app-stat--highlight">✓ In sync with Alex</div>
+          </div>
+        </div>
+        <div class="app-glow" aria-hidden="true"></div>
       </div>
     </div>
   </section>
 
-  <!-- ─── SCENE 7: CLUSTER D — THE INTELLIGENCE ─── -->
-  <section id="scene-7" class="scene scene--dark">
-    <div class="scene-inner scene-inner--center">
-      <div class="intelligence-layout">
-        <div class="screenshot-wrapper screenshot-wrapper--cameo" id="screenshot-f" data-tilt>
-          <div class="screenshot-placeholder">
-            <div class="placeholder-ui">
-              <div class="ui-header">
-                <span class="ui-label">✦ AI Assist</span>
-              </div>
-              <div class="ui-ai-moment">
-                <div class="ui-ai-prompt">Running low on inspiration for Thursday...</div>
-                <div class="ui-ai-response">
-                  <div class="ui-ai-badge">✦ Miso suggests</div>
-                  <div class="ui-meal ui-meal--ai-full">Smoked Paprika Lentil Soup</div>
-                  <div class="ui-ai-reason">Based on your pantry: red lentils, canned tomatoes, smoked paprika</div>
-                </div>
-                <div class="ui-ai-actions">
-                  <span class="ui-ai-btn ui-ai-btn--accept">Add to plan</span>
-                  <span class="ui-ai-btn">Try another</span>
-                </div>
-              </div>
+  <!-- ══ SCENE 7: AI ══ -->
+  <section id="s-ai">
+    <div class="ai-layout">
+      <div class="ai-app" id="ai-app-wrap">
+        <div class="app app--cameo" id="app-f" data-tilt>
+          <div class="app-head">
+            <div class="app-head-mid" style="text-align:left">
+              <div class="app-week-lbl" style="color:var(--gold)">✦ AI Assist</div>
             </div>
           </div>
-          <div class="screenshot-glare"></div>
+          <div class="ai-body">
+            <div class="ai-prompt-card">
+              <div class="ai-prompt-icon">✦</div>
+              <div class="ai-prompt-txt">Thursday looks empty. Want me to suggest something based on your pantry?</div>
+            </div>
+            <div class="ai-context">
+              <div class="ai-ctx-lbl">What you have</div>
+              <div class="ai-chips">
+                <span class="ai-chip">red lentils</span>
+                <span class="ai-chip">canned tomatoes</span>
+                <span class="ai-chip">smoked paprika</span>
+                <span class="ai-chip">coconut milk</span>
+                <span class="ai-chip">onion</span>
+              </div>
+            </div>
+            <div class="ai-suggest">
+              <div class="ai-suggest-head">
+                <span class="ai-badge">✦ Miso suggests</span>
+                <span class="ai-suggest-time">20 min · 0 to buy</span>
+              </div>
+              <div class="ai-suggest-card">
+                <div class="ai-s-emoji">🫕</div>
+                <div class="ai-s-name">Smoked Paprika<br>Lentil Soup</div>
+              </div>
+              <div class="ai-reason">Uses everything already in your pantry</div>
+            </div>
+            <div class="ai-actions">
+              <button class="ai-btn ai-btn--yes">Add to Thursday</button>
+              <button class="ai-btn">Try another</button>
+            </div>
+          </div>
         </div>
-        <div class="intelligence-copy">
-          <h2 class="cluster-title cluster-title--light intelligence-title">Smart when you need it.<br/>Invisible when you don't.</h2>
-          <p class="cluster-sub cluster-sub--light">Miso works completely without AI.<br/>But when inspiration runs out — it's there.</p>
-          <ul class="proof-points" id="proof-d">
-            <li class="proof-point proof-point--light" data-delay="0">
-              <span class="proof-dot"></span>Scan a receipt to update your pantry
-            </li>
-            <li class="proof-point proof-point--light" data-delay="0.15">
-              <span class="proof-dot"></span>Paste any URL to add a dish
-            </li>
-            <li class="proof-point proof-point--light" data-delay="0.3">
-              <span class="proof-dot"></span>AI fills gaps — you stay in control
-            </li>
-          </ul>
-        </div>
+        <div class="app-glow app-glow--ai" aria-hidden="true"></div>
+      </div>
+      <div class="ai-copy" id="ai-copy">
+        <h2 class="feat-title feat-title--light ai-feat-title">Smart when<br>you need it.<br>Invisible when<br>you don't.</h2>
+        <p class="feat-sub feat-sub--light">Miso works completely without AI.<br>But when inspiration runs out — it's there.</p>
+        <ul class="proof-list proof-list--light" id="proof-d">
+          <li><span class="proof-dot"></span>Scan a receipt to update your pantry</li>
+          <li><span class="proof-dot"></span>Paste any URL to import a dish</li>
+          <li><span class="proof-dot"></span>AI fills gaps — you stay in control</li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- ─── SCENE 8: SOCIAL PROOF ─── -->
-  <section id="scene-8" class="scene scene--light">
-    <div class="scene-inner scene-inner--center">
-      <div class="quotes-stage" id="quotes-stage">
-        <div class="quote-card" data-rot="-3">
-          <div class="quote-mark">"</div>
-          <p class="quote-text">I used to spend Sunday nights in a panic. Now I spend them watching TV. Miso sorted our whole week in four minutes.</p>
-          <p class="quote-attr">— Priya, London</p>
+  <!-- ══ SCENE 8: SOCIAL PROOF ══ -->
+  <section id="s-proof">
+    <div class="proof-inner">
+      <div class="proof-cards" id="proof-cards">
+        <div class="qcard" data-r="-3">
+          <div class="qcard-mark">"</div>
+          <p class="qcard-text">I used to spend Sunday nights in a panic. Now I spend them watching TV. Miso sorted our whole week in four minutes.</p>
+          <p class="qcard-attr">— Priya, London</p>
         </div>
-        <div class="quote-card" data-rot="2">
-          <div class="quote-mark">"</div>
-          <p class="quote-text">The shopping list alone is worth it. No more buying things we already have. No more forgetting the one thing we actually needed.</p>
-          <p class="quote-attr">— Marcus, Melbourne</p>
+        <div class="qcard" data-r="2">
+          <div class="qcard-mark">"</div>
+          <p class="qcard-text">The shopping list alone is worth it. No more buying things we already have. No more forgetting the one thing we needed.</p>
+          <p class="qcard-attr">— Marcus, Melbourne</p>
         </div>
-        <div class="quote-card" data-rot="-1">
-          <div class="quote-mark">"</div>
-          <p class="quote-text">It figured out a whole week of meals from what was already in my fridge. I didn't even have to think. That's the magic.</p>
-          <p class="quote-attr">— Tanaka, Tokyo</p>
+        <div class="qcard" data-r="-1.5">
+          <div class="qcard-mark">"</div>
+          <p class="qcard-text">It figured out a full week of meals from what was already in my fridge. I didn't even have to think. That's the magic.</p>
+          <p class="qcard-attr">— Tanaka, Tokyo</p>
         </div>
       </div>
-      <div class="trust-signals">
+      <div class="trust-bar" id="trust-bar">
         iOS &nbsp;·&nbsp; Android &nbsp;·&nbsp; Web &nbsp;·&nbsp; No account needed to start
       </div>
     </div>
   </section>
 
-  <!-- ─── SCENE 9: THE CLOSE ─── -->
-  <section id="scene-9" class="scene scene--dark scene--close">
-    <div class="scene-inner scene-inner--center">
-      <h2 class="close-title">
-        Your kitchen already has<br/>this week's meals in it.
+  <!-- ══ SCENE 9: THE CLOSE ══ -->
+  <section id="s-close">
+    <div class="close-atm" id="close-atm"></div>
+    <div class="close-content" id="close-content">
+      <h2 class="close-title" id="close-title">
+        Your kitchen<br>already has<br>this week's<br>meals in it.
       </h2>
-      <p class="close-sub">Miso just helps you find them.</p>
-      <a href="#" class="cta-primary cta-primary--large">Start for Free</a>
-      <p class="close-fine">No credit card. No commitment. Just dinner.</p>
+      <p class="close-sub" id="close-sub">Miso just helps you find them.</p>
+      <a href="#" class="cta cta--lg" id="close-cta">Start for Free</a>
+      <p class="close-fine" id="close-fine">No credit card. No commitment. Just dinner.</p>
     </div>
   </section>
 
-  <script src="script.js"></script>
+</main>
+
+<script src="script.js"></script>
 </body>
 </html>

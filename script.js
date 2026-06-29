@@ -153,8 +153,18 @@
   ───────────────────────────────── */
   function initPreloader() {
     const preloader = document.getElementById('preloader');
-    if (!preloader) return;
+    if (!preloader) { initScene1(); return; }
 
+    function dismiss() {
+      preloader.style.transition = 'opacity 0.6s ease';
+      preloader.style.opacity = '0';
+      setTimeout(() => {
+        preloader.style.display = 'none';
+        initScene1();
+      }, 650);
+    }
+
+    /* GSAP path — preferred */
     gsap.to(preloader, {
       opacity: 0,
       duration: 0.6,
@@ -165,6 +175,9 @@
         initScene1();
       }
     });
+
+    /* Hard fallback: if GSAP stalls for any reason, CSS transition takes over */
+    setTimeout(dismiss, 2200);
   }
 
   /* ─────────────────────────────
@@ -680,9 +693,13 @@
      INIT
   ───────────────────────────────── */
   function init() {
-    initLenis();
-    initSteam();
+    /* Preloader must always fire — run it before anything that might throw */
     initPreloader();
+
+    /* Optional enhancements — failures here must not block the preloader */
+    try { initLenis(); } catch (e) { console.warn('Lenis failed to init:', e); }
+    try { initSteam(); } catch (e) { console.warn('Steam particles failed:', e); }
+
     initScene2();
     initScene3();
     initScene4();

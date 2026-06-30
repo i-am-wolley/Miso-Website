@@ -1,385 +1,1576 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Miso — What's for dinner?</title>
-  <meta name="description" content="A meal planner that starts with what's already in your kitchen." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Miso — Plan your week. Not your evening.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ TOKENS ═══ */
+:root{
+  --black:#0a0a0a; --dark:#141414; --dw:#1a1208; --dm:#1e1a12;
+  --amber:#E3A14E; --amber2:#C9A24B; --coral:#E8876B;
+  --lavender:#8B7EC8; --sage:#6F9E80; --wood:#C4936A;
+  --cream:#f5f0ea; --cdim:rgba(245,240,234,0.5);
+  --serif:'Lora',Georgia,serif; --sans:'Manrope',system-ui,sans-serif;
+}
+
+/* ═══ RESET ═══ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{overflow-x:hidden;background:var(--black);}
+body{background:var(--black);color:var(--cream);font-family:var(--sans);overflow-x:hidden;cursor:none;}
+img{display:block;}
+button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text-decoration:none;}
+
+/* ═══ AMBIENT CANVAS — fixed, full-page icon texture ═══ */
+#ambient{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* ═══ CURSOR ═══ */
+.cdot,.cring{position:fixed;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cdot{width:6px;height:6px;background:var(--amber);}
+.cring{width:28px;height:28px;border:1.5px solid rgba(227,161,78,.4);transition:width .2s,height .2s;}
+
+/* ═══ LOADER ═══ */
+#loader{
+  position:fixed;inset:0;z-index:10000;background:var(--black);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  transition:opacity .9s,visibility .9s;
+}
+#loader.out{opacity:0;visibility:hidden;pointer-events:none;}
+.l-icon{
+  border-radius:18px;
+  animation:logoPulse 2.2s ease-in-out infinite;
+}
+@keyframes logoPulse{
+  0%,100%{
+    box-shadow:0 0 0 0 rgba(227,161,78,0),
+               0 0 24px rgba(227,161,78,.15);
+    transform:scale(1);
+  }
+  50%{
+    box-shadow:0 0 0 10px rgba(227,161,78,0.06),
+               0 0 48px rgba(227,161,78,.32);
+    transform:scale(1.05);
+  }
+}
+.l-lockup{display:flex;align-items:center;gap:12px;}
+.l-title{font-family:var(--serif);font-style:italic;font-size:44px;color:var(--cream);letter-spacing:.04em;}
+.l-title span{color:var(--amber);}
+.l-track{width:160px;height:1px;background:rgba(255,255,255,.08);}
+.l-bar{height:1px;background:var(--amber);width:0%;}
+.l-msg{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.22);}
+
+/* ═══ NAVBAR ═══ */
+#topnav{
+  position:fixed;top:0;left:0;right:0;z-index:9000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(16px,3vw,40px);height:56px;
+  background:rgba(10,10,10,0.72);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(227,161,78,.08);
+  opacity:0;transform:translateY(-100%);
+  transition:opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+#topnav.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+.nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.nav-icon{border-radius:8px;}
+.nav-title{
+  font-family:var(--serif);font-style:italic;font-size:22px;
+  color:var(--cream);letter-spacing:.03em;line-height:1;
+}
+.nav-title em{color:var(--amber);font-style:inherit;}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 13px;border-radius:20px;
+  font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.03em;
+  color:rgba(245,240,234,.72);border:1px solid rgba(245,240,234,.14);
+  text-decoration:none;white-space:nowrap;
+  transition:color .2s,border-color .2s,background .2s;
+}
+.nav-btn:hover{color:var(--cream);border-color:rgba(245,240,234,.3);}
+.nav-btn--primary{
+  background:var(--amber);color:var(--black);border-color:var(--amber);font-weight:600;
+}
+.nav-btn--primary:hover{background:#f0b060;border-color:#f0b060;color:var(--black);}
+@media(max-width:600px){
+  .nav-btn span{display:none;}
+  .nav-btn{padding:7px 10px;gap:0;}
+  .nav-btn--primary span{display:inline;}
+  .nav-btn--primary{padding:6px 12px;gap:6px;}
+}
+
+/* ═══ SCROLL ROOT ═══ */
+#root{position:relative;z-index:1;}
+
+/* ═══ SECTION BASE ═══ */
+.rm{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* ═══ S1 HERO ═══ */
+#s1{background:transparent;}
+.hero-c{position:relative;z-index:2;text-align:center;padding:0 24px;}
+.hero-num{
+  font-family:var(--sans);font-size:clamp(96px,17vw,210px);font-weight:700;
+  color:var(--cream);letter-spacing:-.04em;line-height:1;display:block;
+}
+.hero-unit{
+  display:block;font-size:clamp(11px,1.2vw,15px);font-weight:500;
+  letter-spacing:.24em;text-transform:uppercase;color:rgba(245,240,234,.32);
+  margin-top:12px;opacity:0;
+}
+.hero-txt{margin-top:28px;opacity:0;}
+.hero-l{font-size:clamp(16px,2vw,24px);font-weight:400;color:var(--cdim);line-height:1.65;}
+.hero-l strong{color:var(--cream);font-weight:600;}
+.hero-l2{color:var(--amber);font-weight:500;margin-top:10px;}
+.scue{
+  position:absolute;bottom:44px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  color:rgba(255,255,255,.28);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  opacity:0;animation:breathe 3s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{opacity:.35;transform:translateX(-50%) translateY(0);}
+  50%{opacity:.8;transform:translateX(-50%) translateY(6px);}}
+
+/* ═══ WIPE ═══ */
+.wipe{position:relative;z-index:2;line-height:0;overflow:hidden;}
+.wipe svg{display:block;width:100%;}
+
+/* ═══ S2 REVEAL ═══ */
+#s2{background:var(--black);}
+.rev-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+
+/* Outline icon particles (DOM, GSAP-driven) */
+.ip{
+  position:absolute;top:50%;left:50%;
+  pointer-events:none;will-change:transform,opacity;
+}
+.ip svg{display:block;}
+
+.dish-name{
+  position:absolute;top:50%;left:50%;
+  font-family:var(--serif);font-style:italic;font-weight:600;
+  font-size:clamp(32px,5.5vw,64px);color:var(--amber);
+  text-align:center;letter-spacing:-.01em;
+  text-shadow:0 0 60px rgba(227,161,78,.4);
+  pointer-events:none;will-change:transform,opacity,filter;
+  white-space:nowrap;
+}
+.dish-sub{
+  position:absolute;top:calc(50% + clamp(38px,5vw,68px));left:50%;
+  font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(227,161,78,.45);font-family:var(--sans);
+  pointer-events:none;will-change:opacity;white-space:nowrap;
+}
+.dish-ingr{
+  position:absolute;
+  top:calc(50% + clamp(60px,8vw,98px));
+  left:50%;transform:translateX(-50%);
+  display:flex;flex-wrap:wrap;justify-content:center;gap:6px;
+  max-width:min(420px,88vw);
+  pointer-events:none;will-change:opacity;
+}
+.dish-ingr span{
+  font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(245,240,234,.4);
+  border:1px solid rgba(245,240,234,.14);
+  border-radius:20px;padding:3px 10px;
+  white-space:nowrap;
+}
+
+.rcopy{
+  position:absolute;left:0;right:0;margin:0 auto;
+  width:min(520px,90vw);text-align:center;
+  font-family:var(--sans);font-size:clamp(14px,1.6vw,19px);
+  color:rgba(245,240,234,.72);line-height:1.65;
+  pointer-events:none;will-change:opacity;z-index:4;
+}
+#rc1{top:clamp(72px,14vh,140px);}
+#rc2{bottom:clamp(48px,10vh,100px);color:var(--amber);font-weight:500;}
+
+/* ═══ S2 HOW ═══ */
+#s2{
+  position:relative;height:100vh;overflow:hidden;
+  background:transparent;  /* let canvas particles show through */
+}
+
+/* Panels — all stacked in same space, only active one visible */
+.fp{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:clamp(56px,9vh,100px) clamp(24px,6vw,80px) 96px;
+  opacity:0;pointer-events:none;
+}
+.fp.fp--active{ pointer-events:auto; }
+.fp::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 45% at 50% 52%, rgba(227,161,78,.07) 0%, transparent 68%);
+  opacity:0;transition:opacity 1s ease;
+}
+.fp.fp--active::before{ opacity:1; }
+
+.fp-inner{
+  width:100%;max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;gap:clamp(36px,5vw,88px);
+}
+.fp-split{ flex-direction:row; }
+.fp-split--rev{ flex-direction:row-reverse; }
+.fp-center{ flex-direction:column;align-items:center;text-align:center; }
+.fp-text{ flex:1;min-width:0; }
+
+/* Content elements — transition in when panel activates */
+.fp-eye{
+  font-family:var(--sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--amber);margin:0 0 16px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .5s ease, transform .5s ease;
+}
+.fp-h{
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(26px,3.6vw,50px);color:var(--cream);
+  line-height:1.18;letter-spacing:-.01em;margin:0 0 20px;
+  opacity:0;transform:translateY(14px);
+  transition:opacity .6s .1s ease, transform .6s .1s ease;
+}
+.fp-body{
+  font-family:var(--sans);font-size:clamp(14px,1.35vw,16px);
+  color:rgba(245,240,234,.48);line-height:1.72;margin:0;max-width:380px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .6s .2s ease, transform .6s .2s ease;
+}
+.fp-sub{
+  font-family:var(--sans);font-size:13px;letter-spacing:.02em;
+  color:rgba(245,240,234,.32);margin:24px 0 0;
+  opacity:0;transition:opacity .6s .45s ease;
+}
+.fp-screen{
+  flex:0 0 clamp(180px,32vw,340px);
+  opacity:0;transform:translateY(18px) scale(.96);
+  transition:opacity .75s .12s ease, transform .75s .12s ease;
+}
+.fp-screen img{
+  width:100%;height:auto;display:block;border-radius:22px;
+  box-shadow:0 20px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05);
+}
+.fp.fp--active .fp-eye,
+.fp.fp--active .fp-h,
+.fp.fp--active .fp-body,
+.fp.fp--active .fp-sub,
+.fp.fp--active .fp-screen{ opacity:1;transform:none; }
+
+/* Stats */
+.fp-stats{ display:flex;gap:clamp(28px,5vw,72px);justify-content:center;margin:32px 0 0; }
+.fp-stat{ display:flex;flex-direction:column;align-items:center;gap:6px; }
+.fp-stat--mid{ position:relative; }
+.fp-stat--mid::before,.fp-stat--mid::after{
+  content:'';position:absolute;top:40%;width:1px;height:36%;background:rgba(227,161,78,.14);
+}
+.fp-stat--mid::before{ right:calc(100% + clamp(14px,2.5vw,36px)); }
+.fp-stat--mid::after{  left:calc(100% + clamp(14px,2.5vw,36px)); }
+.fp-n{
+  font-family:var(--sans);font-weight:700;font-size:clamp(44px,7vw,84px);
+  color:var(--amber);letter-spacing:-.03em;line-height:1;
+}
+.fp-lbl{
+  font-family:var(--sans);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(245,240,234,.32);
+}
+
+/* Notification cards */
+.notif-stack{
+  display:flex;flex-direction:column;gap:10px;
+  margin:36px 0 0;width:100%;max-width:460px;
+}
+.notif-card{
+  display:flex;align-items:baseline;gap:18px;
+  padding:13px 18px;border-radius:12px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(227,161,78,.1);
+  opacity:0;transform:translateY(8px);
+  transition:opacity .5s var(--nd,0s) ease, transform .5s var(--nd,0s) ease;
+}
+.fp.fp--active .notif-card{ opacity:1;transform:none; }
+.notif-day{
+  font-family:var(--sans);font-size:8px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--black);background:var(--amber);
+  padding:3px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;font-weight:700;
+}
+.notif-msg{
+  font-family:var(--sans);font-size:14px;color:rgba(245,240,234,.65);line-height:1.4;
+}
+
+/* Navigation */
+.s2-nav{
+  position:absolute;bottom:28px;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  z-index:10;
+}
+.s2-arr{
+  background:none;border:1px solid rgba(245,240,234,.12);
+  color:rgba(245,240,234,.4);border-radius:50%;
+  width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:color .2s,border-color .2s,opacity .2s;flex-shrink:0;
+}
+.s2-arr:hover{ color:var(--amber);border-color:var(--amber); }
+.s2-arr:disabled{ opacity:.2;cursor:default; }
+.s2-dots{ display:flex;align-items:center;gap:6px; }
+.s2-dot{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  background:none;border:none;cursor:pointer;padding:4px 8px;
+}
+.s2-dot::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:rgba(245,240,234,.2);
+  transition:background .3s, transform .3s;
+}
+.s2-dot--on::before{ background:var(--amber);transform:scale(1.3); }
+.s2-dot span{
+  font-family:var(--sans);font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(245,240,234,.22);transition:color .3s;
+}
+.s2-dot--on span{ color:rgba(245,240,234,.55); }
+
+@media(max-width:768px){
+  .fp-split,.fp-split--rev{ flex-direction:column;gap:28px; }
+  .fp-screen{ flex:none;width:min(240px,72vw);margin:0 auto; }
+  .fp-stats{ gap:20px; }
+  .fp-stat--mid::before,.fp-stat--mid::after{ display:none; }
+  .s2-dot span{ display:none; }
+}
+
+/* ═══ S3 PLAN ═══ */
+#s3{background:var(--dw);align-items:stretch;min-height:100vh;padding:0;}
+.plan-wrap{width:100%;display:flex;flex-direction:column;padding:48px 0 0;}
+.plan-modes{
+  display:flex;gap:0;align-self:center;
+  border:1px solid rgba(255,255,255,.08);border-radius:100px;
+  padding:4px;margin-bottom:40px;
+}
+.mode-btn{
+  padding:10px 24px;border-radius:100px;
+  font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
+  color:rgba(255,255,255,.35);transition:all .3s;
+}
+.mode-btn.on{background:var(--amber);color:var(--black);}
+.plan-stage{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  gap:clamp(32px,6vw,80px);padding:0 48px 60px;
+}
+.plan-screen{
+  /* Natural ratio — no forced height, no distortion */
+  width:clamp(200px,22vw,260px);
+  border-radius:22px;overflow:hidden;flex-shrink:0;
+  box-shadow:0 0 80px rgba(227,161,78,.1),0 32px 80px rgba(0,0,0,.65);
+  border:1px solid rgba(227,161,78,.1);
+  background:var(--cream);
+  transition:opacity .4s ease;
+}
+.plan-screen img{width:100%;height:auto;display:block;} /* CRISP — natural ratio */
+.plan-copy{max-width:360px;}
+.plan-title{
+  font-family:var(--serif);font-style:italic;font-weight:600;
+  font-size:clamp(22px,2.8vw,36px);color:var(--cream);line-height:1.25;margin-bottom:12px;
+}
+.plan-desc{font-size:clamp(13px,1.1vw,16px);color:var(--cdim);line-height:1.7;}
+
+/* ═══ S4 NERD / INTELLIGENCE ═══ */
+#s4{background:#0d0b08;padding:100px 48px;}
+.nerd-wrap{max-width:1040px;margin:0 auto;width:100%;}
+.eyebrow{
+  display:block;font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--amber);font-style:italic;margin-bottom:16px;
+}
+.nerd-hl{
+  font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.5vw,32px);
+  color:var(--cream);line-height:1.35;margin-bottom:52px;
+}
+.nerd-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;}
+.nerd-screen{
+  border-radius:20px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(227,161,78,.12),0 0 60px rgba(227,161,78,.07),0 28px 60px rgba(0,0,0,.6);
+}
+.nerd-screen img{width:100%;height:auto;display:block;} /* crisp */
+.nerd-rules{display:flex;flex-direction:column;}
+.nerd-rule{
+  display:grid;grid-template-columns:94px 1fr;gap:14px;align-items:baseline;
+  padding:16px 0;border-bottom:1px solid rgba(255,255,255,.05);
+}
+.nerd-rule:first-child{border-top:1px solid rgba(255,255,255,.05);}
+.nr-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--amber);}
+.nr-desc{font-size:13px;color:rgba(245,240,234,.45);line-height:1.6;}
+.nerd-close{
+  margin-top:44px;font-family:var(--serif);font-style:italic;
+  font-size:clamp(15px,1.6vw,20px);color:rgba(245,240,234,.3);
+}
+
+/* Scan */
+.scan-wrap{
+  margin-top:60px;display:grid;grid-template-columns:1fr 1fr;
+  gap:52px;align-items:center;
+}
+.scan-txt .eyebrow{margin-top:0;}
+.scan-txt h3{
+  font-family:var(--serif);font-style:italic;font-size:clamp(18px,2vw,26px);
+  color:var(--cream);margin-bottom:10px;
+}
+.scan-txt p{font-size:13px;color:var(--cdim);line-height:1.7;}
+.scan-vf{
+  width:200px;height:280px;position:relative;
+  border:1px solid rgba(227,161,78,.2);border-radius:16px;
+  background:#060504;overflow:hidden;
+}
+.vc{position:absolute;width:16px;height:16px;border-color:var(--amber);border-style:solid;}
+.vc.tl{top:10px;left:10px;border-width:1.5px 0 0 1.5px;border-radius:3px 0 0 0;}
+.vc.tr{top:10px;right:10px;border-width:1.5px 1.5px 0 0;border-radius:0 3px 0 0;}
+.vc.bl{bottom:10px;left:10px;border-width:0 0 1.5px 1.5px;border-radius:0 0 0 3px;}
+.vc.br{bottom:10px;right:10px;border-width:0 1.5px 1.5px 0;border-radius:0 0 3px 0;}
+.vbeam{position:absolute;left:0;right:0;height:1.5px;top:0;
+  background:linear-gradient(to right,transparent,var(--amber),transparent);
+  box-shadow:0 0 8px rgba(227,161,78,.5);animation:vb 2.4s ease-in-out infinite;}
+@keyframes vb{0%,100%{top:6%;}50%{top:80%;}}
+.vdoc{position:absolute;top:20px;left:14px;right:14px;display:flex;flex-direction:column;gap:6px;}
+.vline{height:1px;background:rgba(255,255,255,.07);border-radius:1px;}
+.vchips{position:absolute;bottom:16px;left:10px;right:10px;display:flex;flex-direction:column;gap:5px;}
+.vchip{
+  background:rgba(227,161,78,.09);border:1px solid rgba(227,161,78,.18);
+  border-radius:30px;padding:5px 10px;font-size:10px;color:var(--amber);
+  display:flex;justify-content:space-between;
+  opacity:0;transform:translateX(-6px);transition:opacity .4s,transform .4s;
+}
+.vchip.on{opacity:1;transform:translateX(0);}
+
+/* ═══ S5 HOUSEHOLD ═══ */
+#s5{background:var(--dm);padding:100px 24px;}
+.hh-in{max-width:780px;margin:0 auto;text-align:center;}
+.hh-hl{
+  font-family:var(--sans);font-size:clamp(28px,4vw,48px);font-weight:700;
+  letter-spacing:-.02em;color:var(--cream);margin-bottom:52px;
+}
+.hh-phones{
+  display:flex;align-items:flex-end;justify-content:center;
+  perspective:900px;margin-bottom:44px;
+}
+.hh-ph{
+  width:clamp(130px,17vw,190px);border-radius:20px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:0 20px 60px rgba(0,0,0,.65);flex-shrink:0;
+}
+.hh-ph img{width:100%;height:auto;display:block;} /* crisp */
+.hh-ph-a{transform:rotate(-3deg) translateY(-8px);}
+.hh-ph-b{transform:rotate(3deg) translateY(8px);}
+.hh-sync{display:flex;flex-direction:column;align-items:center;padding:0 18px;flex-shrink:0;}
+.sd{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:sp 2s ease-in-out infinite;}
+.sd:last-child{animation-delay:.85s;}
+.sl{width:1.5px;height:52px;background:linear-gradient(to bottom,var(--amber),rgba(227,161,78,.08));}
+@keyframes sp{0%,100%{opacity:.25;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
+.hh-copy{font-size:clamp(14px,1.3vw,17px);color:var(--cdim);line-height:1.8;}
+
+/* ═══ S6 CTA ═══ */
+#s6{
+  background:radial-gradient(ellipse at 50% 110%,#2a1a08 0%,#0a0a0a 55%);
+  min-height:80vh;text-align:center;flex-direction:column;gap:28px;
+}
+#cta-cv{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.cta-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:22px;padding:0 24px;}
+.cta-logo{display:flex;align-items:center;gap:10px;}
+.cta-logo img{border-radius:10px;}
+.cta-lname{font-family:var(--sans);font-size:22px;font-weight:700;}
+.cta-lname span{color:var(--amber);}
+.cta-pitch{
+  max-width:620px;font-size:clamp(16px,1.8vw,21px);line-height:1.65;
+  color:var(--cdim);font-family:var(--serif);font-style:italic;
+}
+.cta-pitch em{color:var(--cream);font-style:inherit;}
+.cta-badges{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
+.badge{
+  display:inline-flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;padding:13px 22px;
+  font-size:14px;font-weight:600;letter-spacing:-.01em;
+  transition:background .25s,border-color .25s,transform .2s;
+}
+.badge:hover{background:rgba(227,161,78,.1);border-color:rgba(227,161,78,.3);transform:translateY(-2px);}
+.badge-ic{font-size:20px;}
+.badge-tx small{display:block;font-size:10px;font-weight:400;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;}
+
+/* ═══ FOOTER — corkboard ═══ */
+.ft{background:var(--black);border-top:1px solid rgba(255,255,255,.04);}
+.ft-screens{
+  display:flex;justify-content:center;align-items:flex-end;
+  padding:60px 32px 0;gap:10px;perspective:1100px;overflow:hidden;
+}
+.fs{
+  flex-shrink:0;width:clamp(100px,11vw,150px);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 14px 44px rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.06);
+  transition:transform .35s cubic-bezier(.34,1.2,.64,1),box-shadow .35s,z-index 0s;
+  cursor:none;
+}
+.fs img{width:100%;height:auto;display:block;} /* crisp */
+/* Default resting tilts */
+.fs:nth-child(1){transform:rotate(-6deg) translateY(20px);}
+.fs:nth-child(2){transform:rotate(-2deg) translateY(8px);}
+.fs:nth-child(3){transform:rotate(2deg) translateY(3px);}
+.fs:nth-child(4){transform:rotate(5deg) translateY(7px);}
+.fs:nth-child(5){transform:rotate(-1deg) translateY(14px);}
+.fs:nth-child(6){transform:rotate(7deg) translateY(18px);}
+.ft-bar{
+  display:flex;align-items:center;padding:24px 40px;gap:24px;flex-wrap:wrap;
+  border-top:1px solid rgba(255,255,255,.04);margin-top:28px;
+}
+.ft-name{font-family:var(--sans);font-size:17px;font-weight:700;}
+.ft-name span{color:var(--amber);}
+.ft-nav{display:flex;gap:20px;margin-left:auto;}
+.ft-nav a{font-size:12px;color:rgba(255,255,255,.22);transition:color .2s;letter-spacing:.03em;}
+.ft-nav a:hover{color:var(--cream);}
+.ft-copy{font-size:11px;color:rgba(255,255,255,.14);font-style:italic;}
+
+/* ═══ REVEAL UTILITY ═══ */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .75s ease,transform .75s ease;}
+.rv.on{opacity:1;transform:translateY(0);}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:768px){
+  .plan-stage{flex-direction:column;padding:0 24px 48px;gap:28px;}
+  .plan-screen{width:min(240px,78vw);}
+  .nerd-grid,.scan-wrap{grid-template-columns:1fr;gap:36px;}
+  .scan-vf{margin:0 auto;}
+  #s4{padding:72px 24px;}
+  .ft-screens{gap:5px;padding:40px 16px 0;}
+  .fs{width:clamp(80px,13vw,110px);}
+  .ft-bar{padding:18px 20px;gap:14px;}
+  .ft-nav{margin-left:0;}
+  .hh-ph{width:clamp(110px,25vw,150px);}
+}
+</style>
 </head>
 <body>
 
-<!-- ── AMBIENT LAYER ── -->
-<canvas id="steam-canvas" aria-hidden="true"></canvas>
-<div id="cursor-glow" aria-hidden="true"></div>
-<div class="grain" aria-hidden="true"></div>
-<div id="cursor" aria-hidden="true"><div class="cursor-dot"></div></div>
+<!-- ═══ AMBIENT CANVAS ═══ -->
+<canvas id="ambient"></canvas>
 
-<!-- ── PRELOADER ── -->
-<div id="preloader">
-  <div class="pre-inner">
-    <div class="pre-logo">miso</div>
-    <div class="pre-sub">Loading your kitchen...</div>
-    <div class="pre-bar"><div class="pre-fill"></div></div>
+<!-- ═══ LOADER ═══ -->
+<div id="loader">
+  <div class="l-lockup">
+    <img src="Assets%20of%20icon%20and%20also%20hte%20app%20itseld/icon-512.png" width="56" height="56" class="l-icon" alt="Miso">
+    <div class="l-title">Mi<span>so</span></div>
   </div>
+  <div class="l-track"><div class="l-bar" id="lbar"></div></div>
+  <div class="l-msg" id="lmsg">Stocking the pantry...</div>
 </div>
 
-<main>
+<!-- ═══ NAVBAR ═══ -->
+<nav id="topnav">
+  <div class="nav-brand">
+    <img src="Assets%20of%20icon%20and%20also%20hte%20app%20itseld/icon-512.png" width="28" height="28" class="nav-icon" alt="Miso">
+    <span class="nav-title">Mi<em>so</em></span>
+  </div>
+  <div class="nav-links">
+    <a class="nav-btn" href="#" aria-label="Download on the App Store">
+      <svg width="14" height="17" viewBox="0 0 14 17" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.6 13.2c-.28.64-.57 1.23-.9 1.77-.47.67-.86 1.13-1.16 1.39-.46.43-1 .65-1.56.66-.4 0-.88-.11-1.43-.34-.56-.23-1.07-.34-1.54-.34-.49 0-1.01.11-1.58.34-.57.23-1.02.35-1.37.36-.53.02-1.08-.21-1.64-.68-.32-.28-.73-.76-1.21-1.44C1.23 14.07.74 13.1.38 12c-.39-1.17-.58-2.31-.58-3.4 0-1.26.27-2.34.81-3.25.43-.73.99-1.3 1.71-1.73.71-.43 1.48-.65 2.31-.66.45 0 1.04.14 1.78.41.73.27 1.2.41 1.4.41.16 0 .7-.16 1.61-.49.86-.3 1.59-.43 2.19-.39 1.62.13 2.84.76 3.63 1.9-.1.06-.18.12-.26.19-.44.33-.84.76-1.18 1.29-.34.53-.5 1.14-.5 1.83 0 .73.18 1.38.55 1.95.37.56.8.97 1.31 1.22-.1.28-.2.54-.3.79zM9.9.78c0 .57-.2 1.1-.58 1.59-.47.54-.99.85-1.59.9-.02-.06-.02-.13-.02-.2 0-.55.22-1.07.63-1.55.2-.24.46-.44.76-.6.3-.15.59-.24.86-.25.01.04.01.07.01.11H9.9z"/></svg>
+      <span>App Store</span>
+    </a>
+    <a class="nav-btn" href="#" aria-label="Get it on Google Play">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <span>Google Play</span>
+    </a>
+    <a class="nav-btn nav-btn--primary" href="#" aria-label="Open Web App">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span>Web App</span>
+    </a>
+  </div>
+</nav>
 
-  <!-- ══ SCENE 1: HERO ══ -->
-  <section id="s-hero">
-    <div class="hero-atm" id="hero-atm"></div>
-    <div class="hero-content" id="hero-content">
-      <h1 class="hero-title" id="hero-title">
-        <span class="ht-line">What's for</span>
-        <span class="ht-line">dinner?</span>
-      </h1>
-      <p class="hero-line" id="hero-line">
-        Miso answers it.<em> Every.</em><em> Single.</em><em> Week.</em>
-      </p>
-      <a href="#s-reveal" class="cta" id="hero-cta">
-        <span>Start Planning Free</span>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M11 6l5 4-5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-    </div>
-    <div class="scroll-ind" id="scroll-ind">scroll</div>
-  </section>
+<!-- ═══ CURSOR ═══ -->
+<div class="cdot" id="cdot"></div>
+<div class="cring" id="cring"></div>
 
-  <!-- ══ SCENE 2: PROBLEM ══ -->
-  <section id="s-problem">
-    <div class="fridge-beam" id="fridge-beam">
-      <div class="fridge-door"></div>
-      <div class="fridge-spill"></div>
+<div id="root">
+
+<!-- ══════════════════════════════════
+     S1 · THE FIGHT
+══════════════════════════════════ -->
+<section class="rm" id="s1">
+  <!-- Hero content — fades out as ingredients converge -->
+  <div class="hero-c" id="s1-hero">
+    <span class="hero-num" id="counter">0</span>
+    <span class="hero-unit" id="hunit">dinner arguments a year</span>
+    <div class="hero-txt" id="htxt">
+      <p class="hero-l">The average couple argues about <strong>what to cook</strong> more than once every two days.</p>
+      <p class="hero-l hero-l2">There's a better way.</p>
     </div>
-    <div class="problem-content">
-      <div class="problem-lines" id="problem-lines">
-        <p class="pl">You open the fridge.</p>
-        <p class="pl">Nothing goes together.</p>
-        <p class="pl pl--gap">You ask your partner.</p>
-        <p class="pl">They shrug.</p>
-        <p class="pl pl--gap">You order in.</p>
-        <p class="pl">Again.</p>
+  </div>
+  <div class="scue" id="scue">
+    <span>scroll</span>
+    <svg width="12" height="18" viewBox="0 0 12 18" fill="none">
+      <line x1="6" y1="0" x2="6" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M2 8l4 6 4-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- Convergence reveal — appears as ingredients cluster -->
+  <div class="dish-name" id="dishName">Shakshuka</div>
+  <div class="dish-sub" id="dishSub">North African · Dinner</div>
+  <div class="dish-ingr" id="dishIngr">
+    <span>Eggs</span><span>Tomato</span><span>Onion</span><span>Garlic</span><span>Chili</span><span>Olive Oil</span><span>Parsley</span>
+  </div>
+  <p class="rcopy" id="rc1">Turns out, tonight's already sorted&nbsp;— it's all in your pantry.</p>
+  <p class="rcopy" id="rc2">And the rest of your week?&nbsp; Already there too.</p>
+</section>
+
+<!-- wipe -->
+<div class="wipe">
+  <svg viewBox="0 0 1440 50" preserveAspectRatio="none">
+    <rect width="1440" height="50" fill="#1a1208"/>
+  </svg>
+</div>
+
+<!-- ══════════════════════════════════
+     S2 · HOW IT WORKS
+══════════════════════════════════ -->
+<section id="s2">
+
+  <!-- Panel 1 — Weekly plan / calendar formation -->
+  <div class="fp" id="fp1">
+    <div class="fp-inner fp-split">
+      <div class="fp-text">
+        <p class="fp-eye">Plan</p>
+        <h2 class="fp-h">Your whole week,<br>built around what's<br>already in there.</h2>
+        <p class="fp-body">Miso fills your week from your pantry. No shopping trip needed.</p>
       </div>
-      <div class="problem-pivot" id="problem-pivot">
-        <span>Your pantry is full.</span>
-        <span>Your week is empty.</span>
+      <div class="fp-screen">
+        <img src="App%20Screenshots/Weekly%20menu.png" alt="Weekly menu planner">
       </div>
     </div>
-    <div class="s-footer-label">There's a smarter way to feed your family. ↓</div>
-  </section>
+  </div>
 
-  <!-- ══ SCENE 3: REVEAL ══ -->
-  <section id="s-reveal">
-    <div class="reveal-copy" id="reveal-copy">
-      <h2 class="reveal-title">Meet Miso.</h2>
-      <p class="reveal-sub">A meal planner that starts with what's already in your kitchen.</p>
-    </div>
-    <div class="app-stage" id="app-stage-a">
-      <!-- ★ APP MOCKUP A: Full weekly planner -->
-      <div class="app app--wide" id="app-a" data-tilt>
-        <div class="app-head">
-          <button class="app-nav">‹</button>
-          <div class="app-head-mid">
-            <div class="app-week-lbl">This Week</div>
-            <div class="app-date-rng">Jun 30 – Jul 6</div>
+  <!-- Panel 2 — Pantry depth / cluster formation -->
+  <div class="fp" id="fp2">
+    <div class="fp-inner fp-split">
+      <div class="fp-text">
+        <p class="fp-eye">Discover</p>
+        <h2 class="fp-h">We've already<br>filled the shelves.<br>Just pick your cuisine.</h2>
+        <div class="fp-stats">
+          <div class="fp-stat">
+            <span class="fp-n" data-to="15">0</span>
+            <span class="fp-lbl">cuisines</span>
           </div>
-          <button class="app-nav">›</button>
-        </div>
-        <div class="app-toolbar">
-          <button class="app-ai-btn">✦ Smart Fill</button>
-          <button class="app-tool-btn">+ Meal</button>
-          <button class="app-tool-btn">···</button>
-        </div>
-        <div class="app-day-row app-day-row--labels">
-          <div class="day-cell"><span class="day-nm">Mon</span><span class="day-dt">30</span></div>
-          <div class="day-cell"><span class="day-nm">Tue</span><span class="day-dt">1</span></div>
-          <div class="day-cell"><span class="day-nm">Wed</span><span class="day-dt">2</span></div>
-          <div class="day-cell"><span class="day-nm">Thu</span><span class="day-dt">3</span></div>
-          <div class="day-cell"><span class="day-nm">Fri</span><span class="day-dt">4</span></div>
-          <div class="day-cell"><span class="day-nm">Sat</span><span class="day-dt">5</span></div>
-          <div class="day-cell"><span class="day-nm">Sun</span><span class="day-dt">6</span></div>
-        </div>
-        <div class="app-section-lbl">Dinner</div>
-        <div class="app-meal-row">
-          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">35 min</span></div><div class="mc-emoji">🍛</div><div class="mc-name">Chicken Tikka Masala</div><div class="mc-tags"><span class="mc-tag">Indian</span><span class="mc-tag mc-tag--spice">🌶</span></div></div>
-          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">25 min</span></div><div class="mc-emoji">🍝</div><div class="mc-name">Pasta Arrabiata</div><div class="mc-tags"><span class="mc-tag">Italian</span></div></div>
-          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">50 min</span></div><div class="mc-emoji">🍜</div><div class="mc-name">Miso Ramen</div><div class="mc-tags"><span class="mc-tag">Japanese</span></div></div>
-          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">20 min</span></div><div class="mc-emoji">🫕</div><div class="mc-name">Dahl &amp; Rice</div><div class="mc-tags"><span class="mc-tag">Indian</span></div></div>
-          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">30 min</span></div><div class="mc-emoji">🥩</div><div class="mc-name">Steak &amp; Greens</div><div class="mc-tags"><span class="mc-tag">Simple</span></div></div>
-          <div class="meal-card mc--dinner mc--ai"><div class="mc-ai-badge">✦</div><div class="mc-emoji">🍲</div><div class="mc-name">AI Suggest</div><div class="mc-tags"><span class="mc-tag mc-tag--ai">based on pantry</span></div></div>
-          <div class="meal-card mc--dinner"><div class="mc-top"><span class="mc-time">15 min</span></div><div class="mc-emoji">🥚</div><div class="mc-name">Shakshuka</div><div class="mc-tags"><span class="mc-tag">Middle Eastern</span></div></div>
-        </div>
-        <div class="app-section-lbl">Lunch</div>
-        <div class="app-meal-row">
-          <div class="meal-card mc--lunch"><div class="mc-top"><span class="mc-time">10 min</span></div><div class="mc-emoji">🥗</div><div class="mc-name">Quinoa Bowl</div><div class="mc-tags"><span class="mc-tag">Healthy</span></div></div>
-          <div class="meal-card mc--add">+ Add</div>
-          <div class="meal-card mc--lunch"><div class="mc-top"><span class="mc-time">10 min</span></div><div class="mc-emoji">🥙</div><div class="mc-name">Chicken Wrap</div><div class="mc-tags"><span class="mc-tag">Quick</span></div></div>
-          <div class="meal-card mc--add">+ Add</div>
-          <div class="meal-card mc--lunch"><div class="mc-top"><span class="mc-time">15 min</span></div><div class="mc-emoji">🥪</div><div class="mc-name">Avocado Toast</div><div class="mc-tags"></div></div>
-          <div class="meal-card mc--add">+ Add</div>
-          <div class="meal-card mc--add">+ Add</div>
-        </div>
-        <div class="app-status-bar">
-          <div class="app-stat"><span class="stat-i">🛒</span>11 to buy</div>
-          <div class="app-stat-div">·</div>
-          <div class="app-stat"><span class="stat-i">🏠</span>24 in pantry</div>
-          <div class="app-sync">✓ Synced just now</div>
-        </div>
-      </div>
-      <div class="app-glow" aria-hidden="true"></div>
-    </div>
-  </section>
-
-  <!-- ══ SCENE 4: PLANNER FEATURE ══ -->
-  <section id="s-planner" class="s-split">
-    <div class="split-app" id="split-app-planner">
-      <div class="app app--panel" id="app-b" data-tilt>
-        <div class="app-head">
-          <button class="app-nav">‹</button>
-          <div class="app-head-mid">
-            <div class="app-week-lbl">Your Week</div>
-            <div class="app-date-rng">Planned Sunday</div>
+          <div class="fp-stat fp-stat--mid">
+            <span class="fp-n" data-to="360">0</span>
+            <span class="fp-lbl">ingredients</span>
           </div>
-          <button class="app-nav">›</button>
+          <div class="fp-stat">
+            <span class="fp-n" data-to="450">0</span>
+            <span class="fp-lbl">dishes</span>
+          </div>
         </div>
-        <div class="app-section-lbl">Dinner</div>
-        <div class="app-meal-row app-meal-row--panel" id="planner-b-dinner">
-          <!-- Filled by JS animation -->
-        </div>
-        <div class="app-section-lbl">Lunch</div>
-        <div class="app-meal-row app-meal-row--panel" id="planner-b-lunch">
-          <!-- Filled by JS animation -->
-        </div>
-        <div class="app-status-bar">
-          <div class="app-stat app-stat--highlight"><span class="stat-i">✦</span>All meals planned</div>
-          <div class="app-sync">↻ Building your list...</div>
-        </div>
+        <p class="fp-sub">Choose your pantry once. Cook from it forever.</p>
       </div>
-      <div class="app-glow" aria-hidden="true"></div>
+      <div class="fp-screen">
+        <img src="App%20Screenshots/Pantry%20selection.png" alt="Cuisine selection">
+      </div>
     </div>
-    <div class="split-copy" id="split-copy-planner">
-      <h2 class="feat-title">Your week.<br>Sorted Sunday.</h2>
-      <p class="feat-sub">Miso builds a full weekly menu around what you have — or what you want. Swap any dish in one tap.</p>
-      <ul class="proof-list" id="proof-a">
-        <li><span class="proof-dot"></span>Plans around pantry stock — nothing wasted</li>
-        <li><span class="proof-dot"></span>450+ dishes across 15 cuisines</li>
-        <li><span class="proof-dot"></span>Drag, swap, or lock any meal</li>
+  </div>
+
+  <!-- Panel 3 — AI / sunburst formation -->
+  <div class="fp" id="fp3">
+    <div class="fp-inner fp-split fp-split--rev">
+      <div class="fp-screen">
+        <img src="App%20Screenshots/Ai%20Slot%20Slection.png" alt="AI dish selection">
+      </div>
+      <div class="fp-text">
+        <p class="fp-eye">Get Creative</p>
+        <h2 class="fp-h">Let AI fill the gaps —<br>or keep it<br>completely yours.</h2>
+        <p class="fp-body">Tap an empty slot. Keep it, swap it, or go your own way. You're always in control.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 4 — Smart prep / timeline formation -->
+  <div class="fp" id="fp4">
+    <div class="fp-inner fp-split">
+      <div class="fp-text">
+        <p class="fp-eye">Remind</p>
+        <h2 class="fp-h">Miso remembers<br>the things you<br>always forget.</h2>
+        <div class="notif-stack">
+          <div class="notif-card" style="--nd:0s">
+            <span class="notif-day">THAW</span>
+            <span class="notif-msg">Salmon fillet — for tonight's dinner</span>
+          </div>
+          <div class="notif-card" style="--nd:.18s">
+            <span class="notif-day">SOAK</span>
+            <span class="notif-msg">Red lentils — for tomorrow's Dal</span>
+          </div>
+          <div class="notif-card" style="--nd:.36s">
+            <span class="notif-day">MARINATE</span>
+            <span class="notif-msg">Chicken breast — Chicken Katsu tomorrow</span>
+          </div>
+        </div>
+        <p class="fp-sub">Soaking, marinating, thawing — set it once per ingredient, Miso handles the rest.</p>
+      </div>
+      <div class="fp-screen">
+        <img src="App%20Screenshots/Summary%20page.png" alt="Tomorrow's prep">
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="s2-nav" id="s2Nav">
+    <button class="s2-arr" id="s2Prev" aria-label="Previous">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="s2-dots">
+      <button class="s2-dot s2-dot--on" data-to="0"><span>Plan</span></button>
+      <button class="s2-dot" data-to="1"><span>Discover</span></button>
+      <button class="s2-dot" data-to="2"><span>Inspire</span></button>
+      <button class="s2-dot" data-to="3"><span>Remind</span></button>
+    </div>
+    <button class="s2-arr" id="s2Next" aria-label="Next">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════
+     S3 · THE PLAN
+══════════════════════════════════ -->
+<section class="rm" id="s3" style="align-items:stretch;background:var(--dw);">
+  <div class="plan-wrap">
+    <div class="plan-modes" id="planModes">
+      <button class="mode-btn on" data-m="0">Pantry-only</button>
+      <button class="mode-btn" data-m="1">+ Shopping</button>
+      <button class="mode-btn" data-m="2">Full AI</button>
+    </div>
+    <div class="plan-stage">
+      <div class="plan-screen" id="planScreen">
+        <img id="planImg" src="App%20Screenshots/Dishes.png" alt="App screen">
+      </div>
+      <div class="plan-copy">
+        <h3 class="plan-title" id="planTitle">Cook from what you have.</h3>
+        <p class="plan-desc" id="planDesc">Browse every dish your stocked pantry can make right now. No shopping, no guesswork — if it's here, it's on the menu.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     S4 · THE INTELLIGENCE
+══════════════════════════════════ -->
+<section class="rm" id="s4" style="align-items:flex-start;justify-content:center;">
+  <div class="nerd-wrap">
+    <span class="eyebrow rv">Under the hood</span>
+    <h2 class="nerd-hl rv">Tapped = AI suggests a dish.<br>Empty = picked from your own dishes.</h2>
+    <div class="nerd-grid">
+      <div class="nerd-screen rv">
+        <img src="App%20Screenshots/Ai%20Slot%20Slection.png" alt="AI slot selection" loading="lazy">
+      </div>
+      <ul class="nerd-rules rv" style="transition-delay:.15s">
+        <li class="nerd-rule"><span class="nr-label">Stock-first</span><span class="nr-desc">Always choose a dish when its ingredients are stocked</span></li>
+        <li class="nerd-rule"><span class="nr-label">Leftovers</span><span class="nr-desc">Repeat a dish across the week — one cook, no waste</span></li>
+        <li class="nerd-rule"><span class="nr-label">Lock on pick</span><span class="nr-desc">Once chosen that week, locked — no duplicates</span></li>
+        <li class="nerd-rule"><span class="nr-label">Day filters</span><span class="nr-desc">Weekend-only or weekday-only dish assignments</span></li>
+        <li class="nerd-rule"><span class="nr-label">No repeats</span><span class="nr-desc">Never the same dish two weeks in a row</span></li>
       </ul>
     </div>
-  </section>
+    <p class="nerd-close rv" style="transition-delay:.25s">AI shows up exactly twice: scanning your receipt, and finding a recipe from a photo or link. The rest is just good logic.</p>
 
-  <!-- ══ SCENE 5: SHOPPING ══ -->
-  <section id="s-shopping">
-    <div class="shop-layout">
-      <div class="shop-copy" id="shop-copy">
-        <h2 class="feat-title feat-title--light">Only buy what<br>you actually need.</h2>
-        <ul class="proof-list proof-list--light" id="proof-b">
-          <li><span class="proof-dot"></span>Pantry items auto-excluded</li>
-          <li><span class="proof-dot"></span>Sorted by day or supermarket aisle</li>
-          <li><span class="proof-dot"></span>Shared across your whole household</li>
-        </ul>
+    <!-- Scan feature -->
+    <div class="scan-wrap">
+      <div class="scan-txt rv" style="transition-delay:.05s">
+        <span class="eyebrow">AI feature #1</span>
+        <h3>Receipt → pantry stock.</h3>
+        <p>Point your camera at a grocery receipt. Items populate your pantry automatically — no manual entry, always reviewable before saving.</p>
       </div>
-      <div class="shop-app" id="shop-app">
-        <div class="app app--list" id="app-c" data-tilt>
-          <div class="app-head">
-            <div class="app-head-mid" style="text-align:left">
-              <div class="app-week-lbl">Shopping List</div>
-              <div class="app-date-rng">Jun 30 – Jul 6</div>
-            </div>
-            <div class="list-tabs">
-              <button class="list-tab list-tab--on">By Day</button>
-              <button class="list-tab">By Aisle</button>
-            </div>
-          </div>
-          <div class="list-body">
-            <div class="list-group">
-              <div class="list-day-lbl">Monday · Chicken Tikka Masala</div>
-              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Chicken thighs, 500g</div></div>
-              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Cherry tomatoes, punnet</div></div>
-              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Fresh coriander, 1 bunch</div></div>
-              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">Garam masala</div><span class="li-badge">in pantry</span></div>
-              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">Tinned tomatoes</div><span class="li-badge">in pantry</span></div>
-            </div>
-            <div class="list-group">
-              <div class="list-day-lbl">Tuesday · Pasta Arrabiata</div>
-              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Rigatoni, 400g</div></div>
-              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Fresh parsley</div></div>
-              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">Garlic, olive oil, chilli</div><span class="li-badge">in pantry</span></div>
-            </div>
-            <div class="list-group">
-              <div class="list-day-lbl">Wednesday · Miso Ramen</div>
-              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Ramen noodles, 2 portions</div></div>
-              <div class="list-item li--need"><div class="li-check">○</div><div class="li-name">Soft-boiled eggs ×4</div></div>
-              <div class="list-item li--have"><div class="li-check li-check--have">✓</div><div class="li-name">White miso paste</div><span class="li-badge">in pantry</span></div>
-            </div>
-          </div>
-          <div class="app-status-bar">
-            <div class="app-stat app-stat--highlight"><span class="stat-i">🛒</span>11 items to buy</div>
-            <div class="app-stat-div">·</div>
-            <div class="app-stat app-stat--saved"><span class="stat-i">🏠</span>8 saved from pantry</div>
-          </div>
+      <div class="scan-vf rv" id="scanVf" style="transition-delay:.15s">
+        <div class="vc tl"></div><div class="vc tr"></div>
+        <div class="vc bl"></div><div class="vc br"></div>
+        <div class="vbeam"></div>
+        <div class="vdoc">
+          <div class="vline" style="width:100%"></div><div class="vline" style="width:72%"></div>
+          <div class="vline" style="width:55%"></div><div class="vline" style="width:88%"></div>
+          <div class="vline" style="width:40%"></div><div class="vline" style="width:76%"></div>
+          <div class="vline" style="width:90%"></div><div class="vline" style="width:60%"></div>
         </div>
-        <div class="app-glow" aria-hidden="true"></div>
+        <div class="vchips" id="vchips">
+          <div class="vchip" id="vc1">Bok Choy <span>✓</span></div>
+          <div class="vchip" id="vc2">Salmon <span>✓</span></div>
+          <div class="vchip" id="vc3">Sushi Rice <span>✓</span></div>
+          <div class="vchip" id="vc4">Spring Onion <span>✓</span></div>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ══ SCENE 6: HOUSEHOLD ══ -->
-  <section id="s-household">
-    <div class="household-layout">
-      <div class="household-app household-app--left" id="app-d-wrap">
-        <div class="app app--device" id="app-d" data-tilt>
-          <div class="app-head">
-            <div class="device-owner"><span class="owner-avatar">A</span><span class="owner-name">Alex's view</span></div>
-            <div class="app-sync app-sync--inline">✓ Live</div>
-          </div>
-          <div class="app-section-lbl">This Week</div>
-          <div class="app-meal-col">
-            <div class="device-meal-card"><div class="dmc-day">Mon</div><div class="dmc-emoji">🍛</div><div class="dmc-name">Tikka Masala</div></div>
-            <div class="device-meal-card"><div class="dmc-day">Tue</div><div class="dmc-emoji">🍝</div><div class="dmc-name">Pasta Arrabiata</div></div>
-            <div class="device-meal-card dmc--locked"><div class="dmc-day">Wed</div><div class="dmc-emoji">🍜</div><div class="dmc-name">Ramen 🔒</div></div>
-            <div class="device-meal-card"><div class="dmc-day">Thu</div><div class="dmc-emoji">🫕</div><div class="dmc-name">Dahl &amp; Rice</div></div>
-          </div>
-          <div class="app-status-bar">
-            <div class="app-stat app-stat--highlight">✓ In sync with Sam</div>
-          </div>
-        </div>
-        <div class="app-glow" aria-hidden="true"></div>
+<!-- ══════════════════════════════════
+     S5 · HOUSEHOLD
+══════════════════════════════════ -->
+<section class="rm" id="s5">
+  <div class="hh-in">
+    <h2 class="hh-hl rv">One kitchen, shared.</h2>
+    <div class="hh-phones rv" style="transition-delay:.1s">
+      <div class="hh-ph hh-ph-a">
+        <img src="App%20Screenshots/Weekly%20menu.png" alt="Weekly menu" loading="lazy">
       </div>
-      <div class="household-copy" id="household-copy">
-        <h2 class="feat-title">One kitchen.<br>One plan.</h2>
-        <p class="feat-sub">Everyone on the same page.</p>
-        <ul class="proof-list" id="proof-c">
-          <li><span class="proof-dot"></span>Real-time sync across devices</li>
-          <li><span class="proof-dot"></span>Lock meals only you can change</li>
-          <li><span class="proof-dot"></span>Shared pantry, shared list</li>
-        </ul>
+      <div class="hh-sync">
+        <div class="sd"></div>
+        <div class="sl"></div>
+        <div class="sd"></div>
       </div>
-      <div class="household-app household-app--right" id="app-e-wrap">
-        <div class="app app--device" id="app-e" data-tilt>
-          <div class="app-head">
-            <div class="device-owner"><span class="owner-avatar owner-avatar--alt">S</span><span class="owner-name">Sam's view</span></div>
-            <div class="app-sync app-sync--inline">✓ Live</div>
-          </div>
-          <div class="app-section-lbl">This Week</div>
-          <div class="app-meal-col">
-            <div class="device-meal-card"><div class="dmc-day">Mon</div><div class="dmc-emoji">🍛</div><div class="dmc-name">Tikka Masala</div></div>
-            <div class="device-meal-card"><div class="dmc-day">Tue</div><div class="dmc-emoji">🍝</div><div class="dmc-name">Pasta Arrabiata</div></div>
-            <div class="device-meal-card dmc--locked"><div class="dmc-day">Wed</div><div class="dmc-emoji">🍜</div><div class="dmc-name">Ramen 🔒</div></div>
-            <div class="device-meal-card"><div class="dmc-day">Thu</div><div class="dmc-emoji">🫕</div><div class="dmc-name">Dahl &amp; Rice</div></div>
-          </div>
-          <div class="app-status-bar">
-            <div class="app-stat app-stat--highlight">✓ In sync with Alex</div>
-          </div>
-        </div>
-        <div class="app-glow" aria-hidden="true"></div>
+      <div class="hh-ph hh-ph-b">
+        <img src="App%20Screenshots/Summary%20page.png" alt="Summary page" loading="lazy">
       </div>
     </div>
-  </section>
+    <p class="hh-copy rv" style="transition-delay:.2s">
+      Family plan together or keep it all local.<br>
+      Every feature works without a sign-in.
+    </p>
+  </div>
+</section>
 
-  <!-- ══ SCENE 7: AI ══ -->
-  <section id="s-ai">
-    <div class="ai-layout">
-      <div class="ai-app" id="ai-app-wrap">
-        <div class="app app--cameo" id="app-f" data-tilt>
-          <div class="app-head">
-            <div class="app-head-mid" style="text-align:left">
-              <div class="app-week-lbl" style="color:var(--gold)">✦ AI Assist</div>
-            </div>
-          </div>
-          <div class="ai-body">
-            <div class="ai-prompt-card">
-              <div class="ai-prompt-icon">✦</div>
-              <div class="ai-prompt-txt">Thursday looks empty. Want me to suggest something based on your pantry?</div>
-            </div>
-            <div class="ai-context">
-              <div class="ai-ctx-lbl">What you have</div>
-              <div class="ai-chips">
-                <span class="ai-chip">red lentils</span>
-                <span class="ai-chip">canned tomatoes</span>
-                <span class="ai-chip">smoked paprika</span>
-                <span class="ai-chip">coconut milk</span>
-                <span class="ai-chip">onion</span>
-              </div>
-            </div>
-            <div class="ai-suggest">
-              <div class="ai-suggest-head">
-                <span class="ai-badge">✦ Miso suggests</span>
-                <span class="ai-suggest-time">20 min · 0 to buy</span>
-              </div>
-              <div class="ai-suggest-card">
-                <div class="ai-s-emoji">🫕</div>
-                <div class="ai-s-name">Smoked Paprika<br>Lentil Soup</div>
-              </div>
-              <div class="ai-reason">Uses everything already in your pantry</div>
-            </div>
-            <div class="ai-actions">
-              <button class="ai-btn ai-btn--yes">Add to Thursday</button>
-              <button class="ai-btn">Try another</button>
-            </div>
-          </div>
-        </div>
-        <div class="app-glow app-glow--ai" aria-hidden="true"></div>
-      </div>
-      <div class="ai-copy" id="ai-copy">
-        <h2 class="feat-title feat-title--light ai-feat-title">Smart when<br>you need it.<br>Invisible when<br>you don't.</h2>
-        <p class="feat-sub feat-sub--light">Miso works completely without AI.<br>But when inspiration runs out — it's there.</p>
-        <ul class="proof-list proof-list--light" id="proof-d">
-          <li><span class="proof-dot"></span>Scan a receipt to update your pantry</li>
-          <li><span class="proof-dot"></span>Paste any URL to import a dish</li>
-          <li><span class="proof-dot"></span>AI fills gaps — you stay in control</li>
-        </ul>
-      </div>
+<!-- ══════════════════════════════════
+     S6 · CTA
+══════════════════════════════════ -->
+<section class="rm" id="s6">
+  <canvas id="cta-cv"></canvas>
+  <div class="cta-in">
+    <div class="cta-logo rv">
+      <img src="Assets%20of%20icon%20and%20also%20hte%20app%20itseld/icon-512.png" alt="Miso" width="44" height="44" style="border-radius:10px;">
+      <span class="cta-lname">Mi<span>so</span></span>
     </div>
-  </section>
-
-  <!-- ══ SCENE 8: SOCIAL PROOF ══ -->
-  <section id="s-proof">
-    <div class="proof-inner">
-      <div class="proof-cards" id="proof-cards">
-        <div class="qcard" data-r="-3">
-          <div class="qcard-mark">"</div>
-          <p class="qcard-text">I used to spend Sunday nights in a panic. Now I spend them watching TV. Miso sorted our whole week in four minutes.</p>
-          <p class="qcard-attr">— Priya, London</p>
-        </div>
-        <div class="qcard" data-r="2">
-          <div class="qcard-mark">"</div>
-          <p class="qcard-text">The shopping list alone is worth it. No more buying things we already have. No more forgetting the one thing we needed.</p>
-          <p class="qcard-attr">— Marcus, Melbourne</p>
-        </div>
-        <div class="qcard" data-r="-1.5">
-          <div class="qcard-mark">"</div>
-          <p class="qcard-text">It figured out a full week of meals from what was already in my fridge. I didn't even have to think. That's the magic.</p>
-          <p class="qcard-attr">— Tanaka, Tokyo</p>
-        </div>
-      </div>
-      <div class="trust-bar" id="trust-bar">
-        iOS &nbsp;·&nbsp; Android &nbsp;·&nbsp; Web &nbsp;·&nbsp; No account needed to start
-      </div>
+    <p class="cta-pitch rv" style="transition-delay:.1s">
+      <em>Miso is the meal planner that starts in your pantry</em>, not a recipe rabbit hole. Tell Miso what you have, and it builds your whole week — <em>meals your family already loves</em>, a shopping list for only what's missing, and <em>zero Sunday-night stress.</em> 450+ dishes, 15 cuisines, smart leftover logic, shared with your household. <em>AI when you want it. Your recipes when you don't.</em>
+    </p>
+    <div class="cta-badges rv" style="transition-delay:.2s">
+      <!-- TODO: swap for official App Store / Google Play badge SVGs before launch -->
+      <a href="#" class="badge">
+        <span class="badge-ic">🍎</span>
+        <span class="badge-tx"><small>Download on the</small>App Store</span>
+      </a>
+      <a href="#" class="badge">
+        <span class="badge-ic">▶</span>
+        <span class="badge-tx"><small>Get it on</small>Google Play</span>
+      </a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ══ SCENE 9: THE CLOSE ══ -->
-  <section id="s-close">
-    <div class="close-atm" id="close-atm"></div>
-    <div class="close-content" id="close-content">
-      <h2 class="close-title" id="close-title">
-        Your kitchen<br>already has<br>this week's<br>meals in it.
-      </h2>
-      <p class="close-sub" id="close-sub">Miso just helps you find them.</p>
-      <a href="#" class="cta cta--lg" id="close-cta">Start for Free</a>
-      <p class="close-fine" id="close-fine">No credit card. No commitment. Just dinner.</p>
-    </div>
-  </section>
+<!-- ══════════════════════════════════
+     FOOTER — corkboard
+══════════════════════════════════ -->
+<footer class="ft">
+  <div class="ft-screens">
+    <div class="fs" data-r="-6"><img src="App%20Screenshots/Weekly%20menu.png" alt="" loading="lazy"></div>
+    <div class="fs" data-r="-2"><img src="App%20Screenshots/Dishes.png" alt="" loading="lazy"></div>
+    <div class="fs" data-r="2"><img src="App%20Screenshots/Dish%20Modal.png" alt="" loading="lazy"></div>
+    <div class="fs" data-r="5"><img src="App%20Screenshots/Pantry.png" alt="" loading="lazy"></div>
+    <div class="fs" data-r="-1"><img src="App%20Screenshots/Summary%20page.png" alt="" loading="lazy"></div>
+    <div class="fs" data-r="7"><img src="App%20Screenshots/Ai%20Slot%20Slection.png" alt="" loading="lazy"></div>
+  </div>
+  <div class="ft-bar">
+    <span class="ft-name">Mi<span>so</span></span>
+    <nav class="ft-nav">
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Support</a><a href="#">Contact</a>
+    </nav>
+    <span class="ft-copy">© 2025 Miso · Made with appetite.</span>
+  </div>
+</footer>
 
-</main>
+</div><!-- /root -->
 
-<script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* ════════════════════════════════════
+   LOADER
+════════════════════════════════════ */
+const lbar = document.getElementById('lbar');
+const lmsg = document.getElementById('lmsg');
+const msgs = ['Stocking the pantry...','Checking ingredients...','Building your week...','Almost ready...'];
+let lp = 0, li = 0;
+const lt = setInterval(() => {
+  lp += Math.random() * 4.5 + 1.2;
+  if (lp > 100) lp = 100;
+  lbar.style.width = lp + '%';
+  if (lp > (li + 1) * 25 && li < msgs.length - 1) lmsg.textContent = msgs[++li];
+  if (lp >= 100) {
+    clearInterval(lt);
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('out');
+      setTimeout(() => document.getElementById('topnav').classList.add('visible'), 600);
+      boot();
+    }, 300);
+  }
+}, 52);
+
+/* ════════════════════════════════════
+   CURSOR
+════════════════════════════════════ */
+const cdot = document.getElementById('cdot');
+const cring = document.getElementById('cring');
+let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cdot.style.cssText += `left:${mx}px;top:${my}px`; });
+(function cl(){ rx += (mx-rx)*.11; ry += (my-ry)*.11; cring.style.cssText += `left:${rx}px;top:${ry}px`; requestAnimationFrame(cl); })();
+
+/* ════════════════════════════════════
+   INGREDIENT ICON DRAWING
+   All outlines, all pantry/food items
+════════════════════════════════════ */
+function drawIcon(ctx, type, x, y, s, col, a) {
+  ctx.save();
+  ctx.strokeStyle = col; ctx.fillStyle = col;
+  ctx.globalAlpha = a;
+  ctx.lineWidth = Math.max(0.8, s * .07);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  switch(type) {
+
+    case 'avocado':
+      ctx.beginPath();
+      ctx.moveTo(x, y-s*.46);
+      ctx.bezierCurveTo(x+s*.32,y-s*.22,x+s*.38,y+s*.12,x+s*.28,y+s*.36);
+      ctx.quadraticCurveTo(x,y+s*.5,x-s*.28,y+s*.36);
+      ctx.bezierCurveTo(x-s*.38,y+s*.12,x-s*.32,y-s*.22,x,y-s*.46);
+      ctx.stroke();
+      ctx.beginPath();ctx.ellipse(x,y+s*.1,s*.12,s*.16,0,0,Math.PI*2);ctx.stroke();
+      break;
+
+    case 'egg':
+      ctx.beginPath();ctx.ellipse(x,y+s*.04,s*.28,s*.36,0,0,Math.PI*2);ctx.stroke();
+      break;
+
+    case 'onion':
+      ctx.beginPath();
+      ctx.moveTo(x-s*.34,y+s*.08);
+      ctx.arc(x,y+s*.08,s*.34,-Math.PI,0);
+      ctx.quadraticCurveTo(x+s*.38,y+s*.48,x,y+s*.48);
+      ctx.quadraticCurveTo(x-s*.38,y+s*.48,x-s*.34,y+s*.08);
+      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-s*.06,y-s*.26);ctx.bezierCurveTo(x-s*.1,y-s*.4,x+s*.04,y-s*.46,x+s*.06,y-s*.52);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+s*.06,y-s*.26);ctx.bezierCurveTo(x+s*.14,y-s*.38,x+s*.18,y-s*.46,x+s*.14,y-s*.54);ctx.stroke();
+      break;
+
+    case 'carrot':
+      ctx.beginPath();
+      ctx.moveTo(x,y+s*.46);ctx.lineTo(x-s*.22,y-s*.2);
+      ctx.quadraticCurveTo(x,y-s*.28,x+s*.22,y-s*.2);ctx.closePath();ctx.stroke();
+      [[-s*.09,-s*.46],[0,-s*.54],[s*.09,-s*.46]].forEach(([tx,ty])=>{
+        ctx.beginPath();ctx.moveTo(x,y-s*.2);ctx.quadraticCurveTo(x+tx*.5,y-s*.34,x+tx,ty);ctx.stroke();
+      });
+      break;
+
+    case 'tomato':
+      ctx.beginPath();ctx.arc(x,y+s*.08,s*.36,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x,y-s*.28);ctx.lineTo(x,y-s*.44);ctx.stroke();
+      for(let i=0;i<4;i++){
+        const a2=i/4*Math.PI*2-Math.PI/4;
+        ctx.beginPath();ctx.moveTo(x,y-s*.28);ctx.lineTo(x+Math.cos(a2)*s*.16,y-s*.28+Math.sin(a2)*s*.14);ctx.stroke();
+      }
+      break;
+
+    case 'garlic':
+      ctx.beginPath();ctx.arc(x,y+s*.1,s*.32,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x,y-s*.22);ctx.lineTo(x,y+s*.42);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-s*.28,y-s*.02);ctx.lineTo(x+s*.28,y+s*.22);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+s*.28,y-s*.02);ctx.lineTo(x-s*.28,y+s*.22);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x,y-s*.22);ctx.lineTo(x,y-s*.44);ctx.stroke();
+      break;
+
+    case 'leaf':
+      ctx.beginPath();
+      ctx.moveTo(x,y-s*.46);
+      ctx.bezierCurveTo(x+s*.38,y-s*.2,x+s*.38,y+s*.2,x,y+s*.46);
+      ctx.bezierCurveTo(x-s*.38,y+s*.2,x-s*.38,y-s*.2,x,y-s*.46);
+      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x,y-s*.46);ctx.lineTo(x,y+s*.46);ctx.stroke();
+      [[-s*.24,s*.04],[s*.04,s*.2],[-s*.1,-s*.16],[s*.04,-s*.32]].forEach(([dy,_])=>{
+        ctx.beginPath();ctx.moveTo(x,y+dy);ctx.lineTo(x+s*.28,y+dy-s*.06);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(x,y+dy);ctx.lineTo(x-s*.28,y+dy-s*.06);ctx.stroke();
+      });
+      break;
+
+    case 'mushroom':
+      ctx.beginPath();ctx.arc(x,y-s*.06,s*.38,Math.PI,0);ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x-s*.14,y-s*.06);ctx.lineTo(x-s*.11,y+s*.42);
+      ctx.lineTo(x+s*.11,y+s*.42);ctx.lineTo(x+s*.14,y-s*.06);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-s*.36,y-s*.06);ctx.lineTo(x+s*.36,y-s*.06);ctx.stroke();
+      break;
+
+    case 'chili':
+      ctx.beginPath();
+      ctx.moveTo(x,y-s*.44);
+      ctx.bezierCurveTo(x+s*.28,y-s*.22,x+s*.32,y+s*.08,x+s*.14,y+s*.4);
+      ctx.bezierCurveTo(x+s*.04,y+s*.52,x-s*.04,y+s*.44,x-s*.02,y+s*.3);
+      ctx.bezierCurveTo(x-s*.3,y+s*.1,x-s*.22,y-s*.24,x,y-s*.44);
+      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x,y-s*.44);ctx.lineTo(x-s*.04,y-s*.6);ctx.stroke();
+      break;
+
+    case 'fish':
+      ctx.beginPath();ctx.ellipse(x-s*.08,y,s*.3,s*.18,0,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+s*.22,y);ctx.lineTo(x+s*.44,y-s*.22);ctx.lineTo(x+s*.44,y+s*.22);ctx.closePath();ctx.stroke();
+      ctx.beginPath();ctx.arc(x-s*.14,y-s*.04,s*.04,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(x-s*.02,y,s*.12,-Math.PI*.7,Math.PI*.7);ctx.stroke();
+      break;
+
+    case 'broccoli':
+      ctx.beginPath();ctx.moveTo(x-s*.08,y+s*.14);ctx.lineTo(x-s*.08,y+s*.46);ctx.lineTo(x+s*.08,y+s*.46);ctx.lineTo(x+s*.08,y+s*.14);ctx.stroke();
+      [[0,-s*.22,s*.22],[-s*.2,-s*.04,s*.18],[s*.2,-s*.04,s*.18]].forEach(([dx,dy,r])=>{
+        ctx.beginPath();ctx.arc(x+dx,y+dy,r,0,Math.PI*2);ctx.stroke();
+      });
+      break;
+
+    case 'bottle':
+      ctx.beginPath();
+      ctx.moveTo(x-s*.1,y-s*.46);ctx.lineTo(x-s*.1,y-s*.26);
+      ctx.lineTo(x-s*.28,y-s*.08);ctx.lineTo(x-s*.28,y+s*.36);
+      ctx.arc(x,y+s*.36,s*.28,Math.PI,0);
+      ctx.lineTo(x+s*.28,y-s*.08);ctx.lineTo(x+s*.1,y-s*.26);ctx.lineTo(x+s*.1,y-s*.46);ctx.stroke();
+      ctx.beginPath();ctx.rect(x-s*.12,y-s*.54,s*.24,s*.1);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-s*.24,y+s*.06);ctx.lineTo(x+s*.24,y+s*.06);ctx.stroke();
+      break;
+
+    case 'lemon':
+      ctx.beginPath();ctx.ellipse(x,y,s*.4,s*.26,0,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+s*.38,y);ctx.bezierCurveTo(x+s*.44,y-s*.08,x+s*.48,y,x+s*.44,y+s*.06);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-s*.38,y);ctx.bezierCurveTo(x-s*.44,y-s*.08,x-s*.48,y,x-s*.44,y+s*.06);ctx.stroke();
+      break;
+
+    case 'prawn':
+      ctx.beginPath();
+      ctx.moveTo(x,y-s*.44);
+      ctx.bezierCurveTo(x+s*.36,y-s*.28,x+s*.44,y,x+s*.3,y+s*.28);
+      ctx.bezierCurveTo(x+s*.18,y+s*.44,x,y+s*.5,x-s*.1,y+s*.44);ctx.stroke();
+      ctx.beginPath();ctx.arc(x,y-s*.44,s*.1,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x-s*.1,y+s*.44);ctx.lineTo(x-s*.24,y+s*.58);
+      ctx.moveTo(x-s*.1,y+s*.44);ctx.lineTo(x-s*.04,y+s*.6);
+      ctx.moveTo(x-s*.1,y+s*.44);ctx.lineTo(x+s*.08,y+s*.56);ctx.stroke();
+      break;
+
+    case 'pasta':
+      // Bow-tie / farfalle shape
+      ctx.beginPath();ctx.ellipse(x-s*.22,y,s*.2,s*.3,Math.PI*.15,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.ellipse(x+s*.22,y,s*.2,s*.3,-Math.PI*.15,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.ellipse(x,y,s*.06,s*.1,0,0,Math.PI*2);ctx.fill();
+      break;
+
+    case 'rice':
+      // Three grains
+      [[0,0,0.1],[s*.22,s*.06,-0.15],[-s*.22,-s*.04,0.2]].forEach(([dx,dy,rot])=>{
+        ctx.beginPath();ctx.ellipse(x+dx,y+dy,s*.1,s*.28,rot,0,Math.PI*2);ctx.stroke();
+      });
+      break;
+
+    case 'spring-onion':
+      ctx.beginPath();
+      ctx.moveTo(x,y+s*.46);ctx.bezierCurveTo(x+s*.04,y+s*.1,x-s*.04,y-s*.2,x,y-s*.46);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+s*.02,y-s*.06);ctx.quadraticCurveTo(x+s*.26,y-s*.2,x+s*.2,y-s*.46);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-s*.02,y+s*.12);ctx.quadraticCurveTo(x-s*.24,y-s*.04,x-s*.18,y-s*.38);ctx.stroke();
+      // Bulb at base
+      ctx.beginPath();ctx.ellipse(x,y+s*.46,s*.1,s*.08,0,0,Math.PI*2);ctx.stroke();
+      break;
+
+    case 'chicken':
+      // Drumstick
+      ctx.beginPath();
+      ctx.moveTo(x-s*.08,y-s*.44);
+      ctx.bezierCurveTo(x+s*.26,y-s*.36,x+s*.36,y-s*.06,x+s*.2,y+s*.18);
+      ctx.bezierCurveTo(x+s*.08,y+s*.38,x-s*.12,y+s*.38,x-s*.2,y+s*.18);
+      ctx.bezierCurveTo(x-s*.32,y-s*.06,x-s*.22,y-s*.36,x-s*.08,y-s*.44);
+      ctx.stroke();
+      // Bone
+      ctx.beginPath();ctx.moveTo(x,y+s*.36);ctx.lineTo(x,y+s*.54);ctx.stroke();
+      ctx.beginPath();ctx.arc(x,y+s*.56,s*.06,0,Math.PI*2);ctx.stroke();
+      break;
+
+  }
+  ctx.restore();
+}
+
+// Full pantry — everything floating freely across the screen
+const ICON_DEFS = [
+  {t:'avocado',      c:'#6F9E80',               w:2},
+  {t:'egg',          c:'rgba(245,240,234,0.9)',  w:3},
+  {t:'onion',        c:'#C4936A',               w:2},
+  {t:'carrot',       c:'#E8876B',               w:2},
+  {t:'tomato',       c:'#E8876B',               w:2},
+  {t:'garlic',       c:'rgba(245,240,234,0.85)', w:2},
+  {t:'leaf',         c:'#6F9E80',               w:3},
+  {t:'mushroom',     c:'#C4936A',               w:2},
+  {t:'chili',        c:'#E8876B',               w:2},
+  {t:'fish',         c:'#E3A14E',               w:2},
+  {t:'broccoli',     c:'#6F9E80',               w:2},
+  {t:'bottle',       c:'#E3A14E',               w:2},
+  {t:'lemon',        c:'#E3A14E',               w:2},
+  {t:'prawn',        c:'#E8876B',               w:1},
+  {t:'pasta',        c:'rgba(245,240,234,0.8)',  w:2},
+  {t:'rice',         c:'rgba(245,240,234,0.8)',  w:2},
+  {t:'spring-onion', c:'#6F9E80',               w:2},
+  {t:'chicken',      c:'#C4936A',               w:2},
+];
+
+function makeParticles(W, H, count) {
+  const pool = [];
+  ICON_DEFS.forEach(d => { for(let i=0;i<d.w;i++) pool.push(d); });
+  return Array.from({length: count}, () => {
+    const def = pool[Math.floor(Math.random() * pool.length)];
+    return {
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random()-.5) * .5,   // faster drift so reverse feels natural
+      vy: (Math.random()-.5) * .4,
+      s: Math.random() * 16 + 18,    // 18-34px — clearly visible shapes
+      a: Math.random() * .08 + .08,  // 0.08-0.16 — legible at rest
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random()-.5) * .005,
+      t: def.t, c: def.c,
+    };
+  });
+}
+
+/* ════════════════════════════════════
+   AMBIENT CANVAS — fixed full-viewport
+════════════════════════════════════ */
+const ambCv = document.getElementById('ambient');
+const ambCtx = ambCv.getContext('2d');
+let ambW, ambH;
+let ambParts = [];
+let hMouseX = innerWidth/2, hMouseY = innerHeight/2;
+let convergence  = 0; // 0=drifting, 1=converged (Shakshuka)
+let featureConv  = 0; // 0=off, 1=fully in formation (feature panels)
+let activeFormation = -1;
+
+function setFormation(n) {
+  if (!ambParts.length) return;
+  activeFormation = n;
+  const W = ambW, H = ambH, cx = W/2, cy = H/2;
+  const count = ambParts.length;
+
+  ambParts.forEach((p, i) => {
+    switch (n) {
+      case 0: { // Calendar — 7 loose columns
+        const col = i % 7, row = Math.floor(i / 7);
+        const gw = Math.min(W * 0.68, 680);
+        p.fx = cx - gw/2 + col * (gw/6) + (((i*17)%30)-15);
+        p.fy = cy - 110 + row * 54 + (((i*11)%24)-12);
+        break;
+      }
+      case 1: { // Three clusters (15 · 360 · 450)
+        const g = Math.floor(i / (count/3));
+        const gx = [cx - W*0.27, cx, cx + W*0.27][Math.min(g,2)];
+        const seed = i * 137;
+        p.fx = gx + ((seed%80)-40);
+        p.fy = cy + (((seed*3)%80)-40);
+        break;
+      }
+      case 2: { // Sunburst — concentric rings
+        const rings = [8, 12, 15, 9];
+        let ring = 0, idx = i;
+        while (ring < rings.length - 1 && idx >= rings[ring]) { idx -= rings[ring]; ring++; }
+        const r = 72 + ring * 66;
+        const angle = (idx / rings[ring]) * Math.PI * 2 - Math.PI/2;
+        p.fx = cx + Math.cos(angle) * r;
+        p.fy = cy + Math.sin(angle) * r;
+        break;
+      }
+      case 3: { // Horizontal timeline — left to right wave
+        const t = i / (count - 1);
+        p.fx = W * 0.08 + t * W * 0.84;
+        p.fy = cy + Math.sin(t * Math.PI * 2.5) * 44 + (((i*29)%32)-16);
+        break;
+      }
+    }
+  });
+}
+
+function resizeAmb() {
+  ambW = ambCv.width  = window.innerWidth;
+  ambH = ambCv.height = window.innerHeight;
+  if (ambParts.length) {
+    ambParts.forEach(p => {
+      p.tx = ambW/2 + p.ox;
+      p.ty = ambH/2 + p.oy;
+    });
+    if (activeFormation >= 0) setFormation(activeFormation);
+  }
+}
+resizeAmb();
+addEventListener('resize', resizeAmb);
+addEventListener('mousemove', e => { hMouseX = e.clientX; hMouseY = e.clientY; });
+
+function bootAmbient() {
+  const spread = 130;
+  ambParts = makeParticles(ambW, ambH, 44).map(p => {
+    p.ox = (Math.random()-.5) * spread * 2;
+    p.oy = (Math.random()-.5) * spread * 2;
+    p.tx = ambW/2 + p.ox;
+    p.ty = ambH/2 + p.oy;
+    p.fx = p.x; // feature formation target — starts at spawn position
+    p.fy = p.y;
+    return p;
+  });
+
+  (function loop() {
+    ambCtx.clearRect(0, 0, ambW, ambH);
+
+    // Ambient glow pulse at centre when converging
+    if (convergence > 0.25) {
+      const ga = (convergence - 0.25) / 0.75 * 0.22;
+      const gr = ambCtx.createRadialGradient(ambW/2, ambH/2, 0, ambW/2, ambH/2, Math.min(ambW,ambH) * 0.38);
+      gr.addColorStop(0, `rgba(227,161,78,${ga})`);
+      gr.addColorStop(1, 'rgba(227,161,78,0)');
+      ambCtx.fillStyle = gr;
+      ambCtx.fillRect(0, 0, ambW, ambH);
+    }
+
+    ambParts.forEach(p => {
+      // ── PHYSICS ──────────────────────────────────────────────
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Shakshuka convergence pull → center cluster (tx/ty)
+      if (convergence > 0 && featureConv === 0) {
+        const pull = convergence * convergence * 0.14;
+        p.x += (p.tx - p.x) * pull;
+        p.y += (p.ty - p.y) * pull;
+      }
+
+      // Feature formation pull → formation targets (fx/fy) — overrides convergence
+      if (featureConv > 0) {
+        const pull = featureConv * featureConv * 0.1;
+        p.x += (p.fx - p.x) * pull;
+        p.y += (p.fy - p.y) * pull;
+      }
+
+      // Edge wrap only when fully free-drifting
+      if (convergence < 0.06 && featureConv < 0.06) {
+        if (p.x < -80) p.x = ambW + 80; if (p.x > ambW + 80) p.x = -80;
+        if (p.y < -80) p.y = ambH + 80; if (p.y > ambH + 80) p.y = -80;
+      }
+
+      p.rot += p.rotV;
+
+      // Cursor repel when free
+      if (convergence < 0.18 && featureConv < 0.1) {
+        const dx = p.x - hMouseX, dy = p.y - hMouseY;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 110 && d > 0) { p.x += dx/d * .8; p.y += dy/d * .8; }
+      }
+
+      // ── OPACITY ──────────────────────────────────────────────
+      let mult;
+      if (featureConv > 0) {
+        // Feature mode: clear and bright so formation is readable
+        mult = 0.7 + featureConv * 0.8;
+      } else if (convergence < 0.55) {
+        mult = 1 + convergence * 0.9;
+      } else {
+        mult = 1.5 * Math.pow(1 - (convergence - 0.55) / 0.45, 1.4);
+      }
+      const alpha = p.a * mult;
+      if (alpha < 0.004) return;
+
+      ambCtx.save();
+      ambCtx.translate(p.x, p.y); ambCtx.rotate(p.rot);
+      drawIcon(ambCtx, p.t, 0, 0, p.s, p.c, Math.min(0.34, alpha));
+      ambCtx.restore();
+    });
+
+    requestAnimationFrame(loop);
+  })();
+}
+
+/* ════════════════════════════════════
+   BOOT — runs after loader
+════════════════════════════════════ */
+function boot() {
+  bootAmbient();
+
+  /* ── Counter ── */
+  const counterEl = document.getElementById('counter');
+  const hunit = document.getElementById('hunit');
+  const htxt = document.getElementById('htxt');
+  const scue = document.getElementById('scue');
+  gsap.set([htxt, scue], { opacity: 0, y: 12 });
+  gsap.set(hunit, { opacity: 0, y: 6 });
+
+  const obj = { n: 0 };
+  gsap.to(obj, {
+    n: 156, duration: 1.9, ease: 'power2.inOut', delay: .2,
+    onUpdate() { counterEl.textContent = Math.round(obj.n); },
+    onComplete() {
+      // Label appears under the number — "dinner arguments a year"
+      gsap.to(hunit, { opacity: 1, y: 0, duration: .55, delay: .15 });
+      // Context + "there's a better way" after a beat
+      gsap.to(htxt, { opacity: 1, y: 0, duration: .7, delay: 1.1 });
+      gsap.to(scue, { opacity: 1, y: 0, duration: .5, delay: 1.7 });
+    }
+  });
+
+  /* ── S1: Pin + ingredient convergence ── */
+  gsap.registerPlugin(ScrollTrigger);
+  const isMobile = innerWidth <= 768;
+
+  const s1Hero   = document.getElementById('s1-hero');
+  const dishName = document.getElementById('dishName');
+  const dishSub  = document.getElementById('dishSub');
+  const rc1      = document.getElementById('rc1');
+  const rc2      = document.getElementById('rc2');
+
+  // Initial states for reveal overlays
+  gsap.set(dishName,    { xPercent:-50, yPercent:-50, opacity:0, scale:.84, filter:'blur(12px)' });
+  gsap.set(dishSub,     { xPercent:-50, yPercent:-50, opacity:0 });
+  gsap.set('#dishIngr', { opacity:0 });
+  gsap.set([rc1, rc2],  { opacity:0, y:10 });
+
+  if (!isMobile) {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#s1', pin: true, scrub: 2,
+        start: 'top top', end: '+=380%', anticipatePin: 1,
+        onUpdate: self => {
+          convergence = Math.max(0, Math.min(1, (self.progress - 0.15) / 0.58));
+        },
+        onLeave: () => {
+          // Ease convergence back to 0 so particles free up for feature formations
+          const cv = { v: convergence };
+          gsap.to(cv, { v: 0, duration: 1.4, ease: 'power2.inOut', onUpdate: () => { convergence = cv.v; } });
+        },
+        onEnterBack: () => { convergence = 1; featureConv = 0; activeFormation = -1; },
+      }
+    });
+
+    // 0-0.2: hero content fades out (counter, text, scroll cue)
+    tl.to(s1Hero, { opacity:0, y:-28, ease:'power1.in', duration:.2 }, 0);
+    tl.to(scue,   { opacity:0, duration:.1 }, 0);
+
+    // 0.52: "Everything you need…" appears under the glow
+    tl.to(rc1, { opacity:1, y:0, duration:.15 }, .52);
+
+    // 0.65: dish name blooms out of the cluster
+    tl.to(dishName, { opacity:1, scale:1, filter:'blur(0px)', ease:'power2.out', duration:.18 }, .65);
+    tl.to(dishSub,  { opacity:1, duration:.14 }, .72);
+    tl.to('#dishIngr', { opacity:1, duration:.2 }, .76);
+
+    // 0.78: swap copy
+    tl.to(rc1,  { opacity:0, duration:.1 }, .77);
+    tl.to(rc2,  { opacity:1, y:0, duration:.15 }, .8);
+
+    // Background warms as convergence builds
+    tl.to('#s1', { backgroundColor:'#12100a', duration:1 }, 0);
+
+  } else {
+    // Mobile: simple tap-to-reveal on scroll
+    const mo = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        convergence = 0;
+        const step = () => { convergence = Math.min(1, convergence + 0.008); if (convergence < 1) requestAnimationFrame(step); };
+        setTimeout(step, 600);
+        gsap.to(s1Hero, { opacity:0, y:-20, duration:.5, delay:.3 });
+        setTimeout(() => gsap.to(rc1, { opacity:1, y:0, duration:.55 }), 1400);
+        setTimeout(() => {
+          gsap.to(dishName,   { opacity:1, scale:1, filter:'blur(0px)', duration:.7, ease:'power2.out' });
+          gsap.to(dishSub,    { opacity:1, duration:.5, delay:.3 });
+          gsap.to('#dishIngr',{ opacity:1, duration:.5, delay:.55 });
+        }, 2000);
+        setTimeout(() => {
+          gsap.to(rc1, { opacity:0, duration:.35 });
+          gsap.to(rc2, { opacity:1, y:0, duration:.55, delay:.2 });
+        }, 2800);
+        mo.disconnect();
+      }
+    }, { threshold:.6 });
+    mo.observe(document.getElementById('s1'));
+  }
+
+  /* ── S2: Feature panels — click/swipe navigation ── */
+  const fps       = Array.from(document.querySelectorAll('.fp'));
+  const navDots   = Array.from(document.querySelectorAll('.s2-dot'));
+  const prevBtn   = document.getElementById('s2Prev');
+  const nextBtn   = document.getElementById('s2Next');
+  const fProxy    = { c: 0 };
+  let curFP       = 0;
+  let s2Busy      = false;
+  let s2Ready     = false;  // true once section first enters view
+  let counted     = false;
+
+  function runCounters() {
+    document.querySelectorAll('#fp2 .fp-n').forEach(el => {
+      const to = parseInt(el.dataset.to, 10);
+      const o  = { n: 0 };
+      gsap.to(o, {
+        n: to, duration: 1.8, ease: 'power2.out', delay: .25,
+        onUpdate() { el.textContent = Math.round(o.n) + (to >= 360 ? '+' : ''); }
+      });
+    });
+  }
+
+  function goTo(n) {
+    if (n === curFP || n < 0 || n >= fps.length || s2Busy) return;
+    s2Busy = true;
+
+    const from = fps[curFP];
+    const to   = fps[n];
+
+    // Update particle targets — canvas lerp handles smooth morph
+    setFormation(n);
+
+    // Cross-fade panels
+    gsap.to(from, { opacity: 0, duration: .32, ease: 'power2.in',
+      onComplete: () => {
+        from.classList.remove('fp--active');
+        to.classList.add('fp--active');
+        gsap.to(to, { opacity: 1, duration: .44, ease: 'power2.out',
+          onComplete: () => { s2Busy = false; }
+        });
+      }
+    });
+
+    // Dots + arrows
+    navDots[curFP].classList.remove('s2-dot--on');
+    navDots[n].classList.add('s2-dot--on');
+    prevBtn.disabled = n === 0;
+    nextBtn.disabled = n === fps.length - 1;
+    curFP = n;
+
+    if (n === 1 && !counted) { counted = true; runCounters(); }
+  }
+
+  prevBtn.addEventListener('click', () => goTo(curFP - 1));
+  nextBtn.addEventListener('click', () => goTo(curFP + 1));
+  navDots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.to)));
+
+  // Keyboard navigation when section is in view
+  document.addEventListener('keydown', e => {
+    if (!s2Ready) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(curFP + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(curFP - 1);
+  });
+
+  // Touch swipe
+  let s2tx0 = 0;
+  const s2el = document.getElementById('s2');
+  s2el.addEventListener('touchstart', e => { s2tx0 = e.touches[0].clientX; }, { passive:true });
+  s2el.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - s2tx0;
+    if (Math.abs(dx) > 48) dx < 0 ? goTo(curFP + 1) : goTo(curFP - 1);
+  });
+
+  // Activate section when it first scrolls into view
+  new IntersectionObserver(entries => {
+    const isIn = entries[0].isIntersecting;
+    if (isIn && !s2Ready) {
+      s2Ready = true;
+      setFormation(0);
+      gsap.to(fProxy, { c: 1, duration: 1.3, ease: 'power2.inOut',
+        onUpdate: () => { featureConv = fProxy.c; }
+      });
+      fps[0].classList.add('fp--active');
+      gsap.to(fps[0], { opacity: 1, duration: .6, delay: .15 });
+      prevBtn.disabled = true;
+    }
+    if (!isIn && s2Ready) {
+      // Release particles when scrolling out
+      gsap.to(fProxy, { c: 0, duration: .9, ease: 'power2.inOut',
+        onUpdate: () => { featureConv = fProxy.c; }
+      });
+    }
+  }, { threshold: 0.3 }).observe(s2el);
+
+  /* ── S3: Plan mode toggle ── */
+  const planData = [
+    { img:'App%20Screenshots/Dishes.png',            title:'Cook from what you have.',      desc:'Browse every dish your stocked pantry can make right now. No shopping, no guesswork.' },
+    { img:'App%20Screenshots/Weekly%20menu.png',     title:'A short list, nothing more.',   desc:'"13 of 16 on hand. Missing Bok Choy, Salmon and Sushi Rice." The shopping list writes itself.' },
+    { img:'App%20Screenshots/Ai%20Slot%20Slection.png', title:'Tapped = AI suggests a dish.', desc:'Empty = picked from your own dishes. You choose how much help you want, meal by meal.' },
+  ];
+  const planImg   = document.getElementById('planImg');
+  const planTitle = document.getElementById('planTitle');
+  const planDesc  = document.getElementById('planDesc');
+  const planScr   = document.getElementById('planScreen');
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      const m = +btn.dataset.m;
+      planScr.style.opacity = '0';
+      setTimeout(() => {
+        planImg.src = planData[m].img;
+        planTitle.textContent = planData[m].title;
+        planDesc.textContent  = planData[m].desc;
+        planScr.style.opacity = '1';
+        planScr.style.transition = 'opacity .4s ease';
+      }, 180);
+    });
+  });
+
+  /* ── Scan viewfinder: auto-trigger on scroll ── */
+  let scanned = false;
+  const chips = ['vc1','vc2','vc3','vc4'];
+  new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !scanned) {
+      scanned = true;
+      chips.forEach((id, i) => setTimeout(() => document.getElementById(id)?.classList.add('on'), 900 + i * 420));
+    }
+  }, { threshold:.5 }).observe(document.getElementById('scanVf'));
+
+  /* ── Footer 3D tilt ── */
+  document.querySelectorAll('.fs').forEach(el => {
+    const baseR = parseFloat(el.dataset.r) || 0;
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const dx = (e.clientX - r.left) / r.width * 2 - 1;
+      const dy = (e.clientY - r.top) / r.height * 2 - 1;
+      el.style.transform = `rotateZ(${baseR}deg) rotateX(${-dy*14}deg) rotateY(${dx*14}deg) scale(1.08) translateZ(20px)`;
+      el.style.boxShadow = '0 28px 72px rgba(0,0,0,.8), 0 0 36px rgba(227,161,78,.1)';
+      el.style.zIndex = '10';
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+      el.style.boxShadow = '';
+      el.style.zIndex = '';
+    });
+  });
+
+  /* ── CTA spice particles ── */
+  const cv = document.getElementById('cta-cv');
+  if (cv) {
+    let CW, CH;
+    const resize = () => { CW = cv.width = cv.offsetWidth; CH = cv.height = cv.offsetHeight; };
+    resize(); addEventListener('resize', resize);
+    const cx = cv.getContext('2d');
+    const pts = Array.from({length:50}, () => ({
+      x:Math.random()*1400, y:Math.random()*700,
+      vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.18,
+      r:Math.random()*2+.5, h:Math.random()*40+15, a:Math.random()*.1+.03,
+    }));
+    (function drawCta(){
+      cv.width = cv.offsetWidth; cv.height = cv.offsetHeight;
+      const c2 = cv.getContext('2d'); c2.clearRect(0,0,cv.width,cv.height);
+      pts.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=cv.width; if(p.x>cv.width)p.x=0;
+        if(p.y<0)p.y=cv.height; if(p.y>cv.height)p.y=0;
+        c2.beginPath(); c2.arc(p.x,p.y,p.r,0,Math.PI*2);
+        c2.fillStyle=`hsla(${p.h},70%,65%,${p.a})`; c2.fill();
+      });
+      requestAnimationFrame(drawCta);
+    })();
+  }
+
+  /* ── Generic IO reveals ── */
+  const revObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('on'); revObs.unobserve(e.target); }
+    });
+  }, { threshold:.15 });
+  document.querySelectorAll('.rv').forEach(el => revObs.observe(el));
+}
+</script>
 </body>
 </html>

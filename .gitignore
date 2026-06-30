@@ -2,5 +2,6 @@
 Thumbs.db
 *.log
 node_modules/
-.env
-dist/
+# Old prototype files in assets folder
+Assets of icon and also hte app itseld/index.html
+Assets of icon and also hte app itseld/miso-kitchen-world.html

@@ -197,15 +197,13 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 }
 @media(max-width:768px){
   #s2{ height:100svh;overflow-y:auto; }
-  .s2-tabs{ display:flex; }
-  .s2-nav{ display:none; }
 }
 
 /* Panels — all stacked in same space, only active one visible */
 .fp{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
-  padding:clamp(56px,9vh,100px) clamp(24px,6vw,80px) 96px;
+  padding:clamp(108px,12vh,148px) clamp(24px,6vw,80px) 40px;
   opacity:0;pointer-events:none;
 }
 .fp.fp--active{ pointer-events:auto; }
@@ -306,9 +304,9 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   font-family:var(--sans);font-size:14px;color:rgba(245,240,234,.65);line-height:1.4;
 }
 
-/* Mobile top tabs */
+/* Top tabs (all screens) */
 .s2-tabs{
-  display:none;
+  display:flex;
   position:absolute;top:56px;left:0;right:0;z-index:10;
   gap:6px;padding:8px 16px;
   background:rgba(10,10,10,0.75);
@@ -328,12 +326,8 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   color:var(--black);background:var(--amber);border-color:var(--amber);
 }
 
-/* Navigation (desktop) */
-.s2-nav{
-  position:absolute;bottom:28px;left:0;right:0;
-  display:flex;align-items:center;justify-content:center;gap:20px;
-  z-index:10;
-}
+/* Bottom nav — hidden, tabs replaced it */
+.s2-nav{ display:none; }
 .s2-arr{
   background:none;border:1px solid rgba(245,240,234,.12);
   color:rgba(245,240,234,.4);border-radius:50%;
@@ -1450,27 +1444,29 @@ function boot() {
     tl.to('#s1', { backgroundColor:'#12100a', duration:1 }, 0);
 
   } else {
-    // Mobile: simple tap-to-reveal on scroll
-    const mo = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        convergence = 0;
-        const step = () => { convergence = Math.min(1, convergence + 0.008); if (convergence < 1) requestAnimationFrame(step); };
-        setTimeout(step, 600);
-        gsap.to(s1Hero, { opacity:0, y:-20, duration:.5, delay:.3 });
-        setTimeout(() => gsap.to(rc1, { opacity:1, y:0, duration:.55 }), 1400);
-        setTimeout(() => {
-          gsap.to(dishName,   { opacity:1, scale:1, filter:'blur(0px)', duration:.7, ease:'power2.out' });
-          gsap.to(dishSub,    { opacity:1, duration:.5, delay:.3 });
-          gsap.to('#dishIngr',{ opacity:1, duration:.5, delay:.55 });
-        }, 2000);
-        setTimeout(() => {
-          gsap.to(rc1, { opacity:0, duration:.35 });
-          gsap.to(rc2, { opacity:1, y:0, duration:.55, delay:.2 });
-        }, 2800);
-        mo.disconnect();
-      }
-    }, { threshold:.6 });
-    mo.observe(document.getElementById('s1'));
+    // Mobile: convergence triggers on first scroll, after counter finishes
+    let convDone = false;
+    const doConverge = () => {
+      if (convDone) return;
+      convDone = true;
+      const step = () => { convergence = Math.min(1, convergence + 0.009); if (convergence < 1) requestAnimationFrame(step); };
+      gsap.to(s1Hero, { opacity:0, y:-20, duration:.5 });
+      setTimeout(step, 300);
+      setTimeout(() => gsap.to(rc1, { opacity:1, y:0, duration:.55 }), 1100);
+      setTimeout(() => {
+        gsap.to(dishName,   { opacity:1, scale:1, filter:'blur(0px)', duration:.7, ease:'power2.out' });
+        gsap.to(dishSub,    { opacity:1, duration:.5, delay:.3 });
+        gsap.to('#dishIngr',{ opacity:1, duration:.5, delay:.55 });
+      }, 1800);
+      setTimeout(() => {
+        gsap.to(rc1, { opacity:0, duration:.35 });
+        gsap.to(rc2, { opacity:1, y:0, duration:.55, delay:.2 });
+      }, 2600);
+    };
+    // Start listening after counter + text sequence completes (~2.1s)
+    setTimeout(() => {
+      window.addEventListener('scroll', doConverge, { passive:true, once:true });
+    }, 2100);
   }
 
   /* ── S2: Feature panels — click/swipe navigation ── */

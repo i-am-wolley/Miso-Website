@@ -568,82 +568,67 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 }
 .hh2-in.hh2--vis .hh2-vis{ opacity:1;transform:none; }
 
-/* Table */
-.tt-wrap{
-  position:relative;
-  width:clamp(220px,26vw,290px);
-  height:clamp(220px,26vw,290px);
+/* Activity feed */
+.af-card{
+  width:min(340px,78vw);
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;overflow:hidden;
 }
-.tt-table{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:78%;height:52%;border-radius:50%;
-  background:radial-gradient(ellipse at 50% 50%,rgba(196,147,106,.13) 0%,rgba(196,147,106,.05) 55%,transparent 80%);
-  border:1px solid rgba(196,147,106,.25);
+.af-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:11px 16px;
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
-.tt-dish{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  font-family:var(--serif);font-style:italic;
-  font-size:clamp(12px,1.2vw,14px);color:var(--amber);
-  white-space:nowrap;letter-spacing:-.01em;
-  text-shadow:0 0 24px rgba(227,161,78,.45);
-  opacity:0;filter:blur(6px);
-  transition:opacity .65s ease,filter .65s ease;
-  pointer-events:none;
+.af-pulse{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--sage);box-shadow:0 0 8px rgba(111,158,128,.7);
+  animation:afp 2.2s ease-in-out infinite;flex-shrink:0;
 }
-.tt-dish.on{ opacity:1;filter:blur(0); }
-.tt-seat{
-  position:absolute;
-  width:clamp(38px,4vw,46px);height:clamp(38px,4vw,46px);
-  border-radius:50%;
+@keyframes afp{0%,100%{opacity:.4;transform:scale(1);}50%{opacity:1;transform:scale(1.35);}}
+.af-hdr-label{
+  font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(245,240,234,.28);flex:1;
+}
+.af-live{
+  font-family:var(--sans);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sage);
+  background:rgba(111,158,128,.1);border:1px solid rgba(111,158,128,.22);
+  padding:2px 8px;border-radius:10px;
+}
+.af-item{
+  display:flex;align-items:center;gap:11px;
+  padding:11px 16px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  opacity:0;transform:translateY(7px);
+  transition:opacity .4s ease,transform .4s ease;
+}
+.af-item:last-child{ border-bottom:none; }
+.af-item.on{ opacity:1;transform:none; }
+.af-av{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--sans);font-size:clamp(11px,1.1vw,13px);font-weight:700;
-  border:1.5px solid;
-  opacity:0;
-  transition:opacity .4s ease,transform .45s cubic-bezier(.34,1.2,.64,1),box-shadow .5s ease;
+  font-family:var(--sans);font-size:11px;font-weight:700;
+  border:1px solid;
 }
-.tt-check{
-  position:absolute;bottom:-3px;right:-3px;
-  width:15px;height:15px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:8px;font-weight:700;color:var(--black);
-  opacity:0;transform:scale(0) rotate(-20deg);
-  transition:opacity .3s ease,transform .45s cubic-bezier(.34,1.5,.64,1);
+.af-av--amber{ background:rgba(227,161,78,.14);border-color:rgba(227,161,78,.38);color:var(--amber); }
+.af-av--coral{ background:rgba(232,135,107,.14);border-color:rgba(232,135,107,.38);color:var(--coral); }
+.af-av--sage { background:rgba(111,158,128,.14);border-color:rgba(111,158,128,.38);color:var(--sage); }
+.af-av--lav  { background:rgba(139,126,200,.14);border-color:rgba(139,126,200,.38);color:var(--lavender); }
+.af-info{ flex:1;min-width:0; }
+.af-who{
+  font-family:var(--sans);font-size:12px;font-weight:600;
+  color:rgba(245,240,234,.8);display:block;
 }
-.tt-seat.tt-claimed .tt-check{ opacity:1;transform:scale(1) rotate(0); }
-
-.tt-s1{
-  top:0;left:50%;
-  transform:translate(-50%,-50%) scale(.8);
-  background:rgba(227,161,78,.12);border-color:rgba(227,161,78,.5);color:var(--amber);
+.af-action{
+  font-family:var(--sans);font-size:11px;
+  color:rgba(245,240,234,.38);display:block;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.tt-s1.on{ transform:translate(-50%,-50%) scale(1); }
-.tt-s1.tt-claimed{ box-shadow:0 0 20px rgba(227,161,78,.22); }
-.tt-s1 .tt-check{ background:var(--amber); }
-.tt-s2{
-  right:0;top:50%;
-  transform:translate(50%,-50%) scale(.8);
-  background:rgba(232,135,107,.12);border-color:rgba(232,135,107,.5);color:var(--coral);
+.af-time{
+  font-family:var(--sans);font-size:10px;letter-spacing:.03em;
+  color:rgba(245,240,234,.18);flex-shrink:0;
 }
-.tt-s2.on{ transform:translate(50%,-50%) scale(1); }
-.tt-s2.tt-claimed{ box-shadow:0 0 20px rgba(232,135,107,.22); }
-.tt-s2 .tt-check{ background:var(--coral); }
-.tt-s3{
-  bottom:0;left:50%;
-  transform:translate(-50%,50%) scale(.8);
-  background:rgba(111,158,128,.12);border-color:rgba(111,158,128,.5);color:var(--sage);
-}
-.tt-s3.on{ transform:translate(-50%,50%) scale(1); }
-.tt-s3.tt-claimed{ box-shadow:0 0 20px rgba(111,158,128,.22); }
-.tt-s3 .tt-check{ background:var(--sage); }
-.tt-s4{
-  left:0;top:50%;
-  transform:translate(-50%,-50%) scale(.8);
-  background:rgba(139,126,200,.12);border-color:rgba(139,126,200,.5);color:var(--lavender);
-}
-.tt-s4.on{ transform:translate(-50%,-50%) scale(1); }
-.tt-s4.tt-claimed{ box-shadow:0 0 20px rgba(139,126,200,.22); }
-.tt-s4 .tt-check{ background:var(--lavender); }
 
 /* ═══ S4 NERD / INTELLIGENCE (kept for orphaned CSS, HTML removed) ═══ */
 #s4{background:#0d0b08;padding:100px 48px;}
@@ -843,7 +828,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   .hh2-in{ flex-direction:column;gap:32px; }
   .hh2-vis{ flex:none;width:100%;opacity:1!important;transform:none!important; }
   .hh2-eye,.hh2-h,.hh2-body,.hh2-note{ opacity:1!important;transform:none!important; }
-  .tt-wrap{ width:min(210px,65vw);height:min(210px,65vw); }
+  .af-card{ width:min(320px,90vw); }
 
   /* S6 — CTA */
   .cta-pitch{ font-size:clamp(14px,3.8vw,18px); }
@@ -1176,14 +1161,13 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
     </div>
 
     <div class="hh2-vis">
-      <div class="tt-wrap" id="ttWrap">
-        <div class="tt-table">
-          <div class="tt-dish" id="ttDish">Biryani Night</div>
+      <div class="af-card">
+        <div class="af-hdr">
+          <div class="af-pulse"></div>
+          <span class="af-hdr-label">Kitchen activity</span>
+          <span class="af-live">Live</span>
         </div>
-        <div class="tt-seat tt-s1" id="ttS0">A<div class="tt-check">✓</div></div>
-        <div class="tt-seat tt-s2" id="ttS1">J<div class="tt-check">✓</div></div>
-        <div class="tt-seat tt-s3" id="ttS2">M<div class="tt-check">✓</div></div>
-        <div class="tt-seat tt-s4" id="ttS3">K<div class="tt-check">✓</div></div>
+        <div id="afItems"></div>
       </div>
     </div>
 
@@ -1982,23 +1966,35 @@ function boot() {
     }, { threshold: 0.4 }).observe(ap3el);
   }
 
-  /* ── Household: table animation ── */
-  const hh2In   = document.getElementById('hh2In');
-  const ttDish  = document.getElementById('ttDish');
-  const ttSeats = ['ttS0','ttS1','ttS2','ttS3'].map(id => document.getElementById(id));
-  let tableDone = false;
+  /* ── Household: activity feed ── */
+  const hh2In  = document.getElementById('hh2In');
+  const afItems = document.getElementById('afItems');
+  let hhDone   = false;
 
-  if (hh2In) {
+  const afData = [
+    { init:'P', cls:'af-av--amber', who:'Priya', action:'added Chicken Thighs to pantry',  time:'just now' },
+    { init:'A', cls:'af-av--coral', who:'Aman',  action:'planned Thursday — Dal Makhani',  time:'2m ago'   },
+    { init:'✦', cls:'af-av--sage',  who:'Miso',  action:'updated your shopping list',      time:'5m ago'   },
+    { init:'K', cls:'af-av--lav',   who:'Kiran', action:'checked off 4 items',             time:'12m ago'  },
+  ];
+
+  if (hh2In && afItems) {
+    afData.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'af-item';
+      el.innerHTML = `<div class="af-av ${d.cls}">${d.init}</div>`
+        + `<div class="af-info"><span class="af-who">${d.who}</span>`
+        + `<span class="af-action">${d.action}</span></div>`
+        + `<span class="af-time">${d.time}</span>`;
+      afItems.appendChild(el);
+    });
+
     new IntersectionObserver(entries => {
-      if (!entries[0].isIntersecting || tableDone) return;
-      tableDone = true;
+      if (!entries[0].isIntersecting || hhDone) return;
+      hhDone = true;
       hh2In.classList.add('hh2--vis');
-      ttSeats.forEach((seat, i) => {
-        if (seat) setTimeout(() => seat.classList.add('on'), 400 + i * 160);
-      });
-      if (ttDish) setTimeout(() => ttDish.classList.add('on'), 1080);
-      ttSeats.forEach((seat, i) => {
-        if (seat) setTimeout(() => seat.classList.add('tt-claimed'), 1580 + i * 460);
+      Array.from(afItems.children).forEach((item, i) => {
+        setTimeout(() => item.classList.add('on'), 350 + i * 420);
       });
     }, { threshold: 0.4 }).observe(hh2In);
   }

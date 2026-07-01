@@ -197,13 +197,17 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 }
 @media(max-width:768px){
   #s2{ height:100svh;overflow-y:auto; }
+  .s2-tabs{ display:flex; }
+  .s2-nav{ display:none; }
+  /* Pin content to top so it sits right under the tab bar */
+  .fp{ padding:96px 18px 24px;align-items:flex-start; }
 }
 
 /* Panels — all stacked in same space, only active one visible */
 .fp{
   position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
-  padding:clamp(108px,12vh,148px) clamp(24px,6vw,80px) 40px;
+  padding:clamp(56px,9vh,100px) clamp(24px,6vw,80px) 96px;
   opacity:0;pointer-events:none;
 }
 .fp.fp--active{ pointer-events:auto; }
@@ -304,9 +308,9 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   font-family:var(--sans);font-size:14px;color:rgba(245,240,234,.65);line-height:1.4;
 }
 
-/* Top tabs (all screens) */
+/* Mobile top tabs */
 .s2-tabs{
-  display:flex;
+  display:none;
   position:absolute;top:56px;left:0;right:0;z-index:10;
   gap:6px;padding:8px 16px;
   background:rgba(10,10,10,0.75);
@@ -326,8 +330,12 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   color:var(--black);background:var(--amber);border-color:var(--amber);
 }
 
-/* Bottom nav — hidden, tabs replaced it */
-.s2-nav{ display:none; }
+/* Navigation (desktop) */
+.s2-nav{
+  position:absolute;bottom:28px;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  z-index:10;
+}
 .s2-arr{
   background:none;border:1px solid rgba(245,240,234,.12);
   color:rgba(245,240,234,.4);border-radius:50%;
@@ -603,7 +611,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 
 /* ═══ MOBILE ≤480px — very small phones ═══ */
 @media(max-width:480px){
-  .fp{ padding:100px 16px 64px; }
+  .fp{ padding:92px 16px 20px; }
   .fp-screen{ width:min(150px,44vw); }
   .fp-h{ font-size:clamp(20px,5.5vw,30px); }
   .fp-n{ font-size:clamp(32px,9vw,52px); }

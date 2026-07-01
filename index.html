@@ -722,66 +722,77 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 @keyframes sp{0%,100%{opacity:.25;transform:scale(1);}50%{opacity:1;transform:scale(1.5);}}
 .hh-copy{font-size:clamp(14px,1.3vw,17px);color:var(--cdim);line-height:1.8;}
 
-/* ═══ S6 CTA ═══ */
-#s6{
-  background:radial-gradient(ellipse at 50% 110%,#2a1a08 0%,#0a0a0a 55%);
-  min-height:80vh;text-align:center;flex-direction:column;gap:28px;
+/* ═══ CTA + FOOTER ═══ */
+#s-cta{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 60% 50% at 50% 60%,#1a1208 0%,var(--black) 65%);
+  padding:clamp(64px,10vh,120px) clamp(24px,6vw,80px) 0;
+  text-align:center;gap:0;
 }
-#cta-cv{position:absolute;inset:0;z-index:0;pointer-events:none;}
-.cta-in{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:22px;padding:0 24px;}
-.cta-logo{display:flex;align-items:center;gap:10px;}
-.cta-logo img{border-radius:10px;}
-.cta-lname{font-family:var(--sans);font-size:22px;font-weight:700;}
-.cta-lname span{color:var(--amber);}
-.cta-pitch{
-  max-width:620px;font-size:clamp(16px,1.8vw,21px);line-height:1.65;
-  color:var(--cdim);font-family:var(--serif);font-style:italic;
+.cta2-in{
+  width:100%;display:flex;flex-direction:column;align-items:center;
+  gap:0;flex:1;
 }
-.cta-pitch em{color:var(--cream);font-style:inherit;}
-.cta-badges{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
-.badge{
-  display:inline-flex;align-items:center;gap:12px;
+.cta2-body{
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(28px,4vh,44px);
+}
+.cta2-logo{
+  display:flex;align-items:center;gap:12px;
+  opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease;
+}
+.cta2-logo img{border-radius:12px;width:52px;height:52px;}
+.cta2-name{
+  font-family:var(--sans);font-size:22px;font-weight:700;
+  color:var(--cream);letter-spacing:-.02em;
+}
+.cta2-line{
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(30px,5vw,62px);color:var(--cream);
+  line-height:1.15;letter-spacing:-.02em;margin:0;
+  opacity:0;transform:translateY(18px);transition:opacity .7s .1s ease,transform .7s .1s ease;
+}
+.cta2-badges{
+  display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  opacity:0;transform:translateY(14px);transition:opacity .6s .22s ease,transform .6s .22s ease;
+}
+.cta2-badge{
+  display:inline-flex;align-items:center;gap:11px;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;padding:13px 22px;
-  font-size:14px;font-weight:600;letter-spacing:-.01em;
-  transition:background .25s,border-color .25s,transform .2s;
+  border-radius:10px;padding:12px 20px;text-decoration:none;
+  transition:background .22s,border-color .22s,transform .2s;
 }
-.badge:hover{background:rgba(227,161,78,.1);border-color:rgba(227,161,78,.3);transform:translateY(-2px);}
-.badge-ic{font-size:20px;}
-.badge-tx small{display:block;font-size:10px;font-weight:400;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;}
+.cta2-badge:hover{
+  background:rgba(227,161,78,.1);border-color:rgba(227,161,78,.3);
+  transform:translateY(-2px);
+}
+.cta2-badge svg{ flex-shrink:0; }
+.cta2-btx small{
+  display:block;font-family:var(--sans);font-size:9px;font-weight:400;
+  color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase;
+}
+.cta2-btx strong{
+  display:block;font-family:var(--sans);font-size:14px;font-weight:600;
+  color:var(--cream);letter-spacing:-.01em;
+}
+.cta2-in.cta2--vis .cta2-logo,
+.cta2-in.cta2--vis .cta2-line,
+.cta2-in.cta2--vis .cta2-badges{ opacity:1;transform:none; }
 
-/* ═══ FOOTER — corkboard ═══ */
-.ft{background:var(--black);border-top:1px solid rgba(255,255,255,.04);}
-.ft-screens{
-  display:flex;justify-content:center;align-items:flex-end;
-  padding:60px 32px 0;gap:10px;perspective:1100px;overflow:hidden;
+/* mini footer bar */
+.ft2{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:20px clamp(24px,6vw,80px);
+  border-top:1px solid rgba(255,255,255,.05);
+  margin-top:clamp(48px,7vh,80px);
 }
-.fs{
-  flex-shrink:0;width:clamp(100px,11vw,150px);
-  border-radius:14px;overflow:hidden;
-  box-shadow:0 14px 44px rgba(0,0,0,.55);
-  border:1px solid rgba(255,255,255,.06);
-  transition:transform .35s cubic-bezier(.34,1.2,.64,1),box-shadow .35s,z-index 0s;
-  cursor:none;
-}
-.fs img{width:100%;height:auto;display:block;} /* crisp */
-/* Default resting tilts */
-.fs:nth-child(1){transform:rotate(-6deg) translateY(20px);}
-.fs:nth-child(2){transform:rotate(-2deg) translateY(8px);}
-.fs:nth-child(3){transform:rotate(2deg) translateY(3px);}
-.fs:nth-child(4){transform:rotate(5deg) translateY(7px);}
-.fs:nth-child(5){transform:rotate(-1deg) translateY(14px);}
-.fs:nth-child(6){transform:rotate(7deg) translateY(18px);}
-.ft-bar{
-  display:flex;align-items:center;padding:24px 40px;gap:24px;flex-wrap:wrap;
-  border-top:1px solid rgba(255,255,255,.04);margin-top:28px;
-}
-.ft-name{font-family:var(--sans);font-size:17px;font-weight:700;}
-.ft-name span{color:var(--amber);}
-.ft-nav{display:flex;gap:20px;margin-left:auto;}
-.ft-nav a{font-size:12px;color:rgba(255,255,255,.22);transition:color .2s;letter-spacing:.03em;}
-.ft-nav a:hover{color:var(--cream);}
-.ft-copy{font-size:11px;color:rgba(255,255,255,.14);font-style:italic;}
+.ft2-name{ font-family:var(--sans);font-size:13px;font-weight:700;color:rgba(255,255,255,.3); }
+.ft2-name em{ color:var(--amber);font-style:normal; }
+.ft2-nav{ display:flex;gap:18px; }
+.ft2-nav a{ font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);transition:color .2s;letter-spacing:.03em; }
+.ft2-nav a:hover{ color:var(--cream); }
+.ft2-copy{ font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.12); }
 
 /* ═══ REVEAL UTILITY ═══ */
 .rv{opacity:0;transform:translateY(22px);transition:opacity .75s ease,transform .75s ease;}
@@ -830,17 +841,12 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   .hh2-eye,.hh2-h,.hh2-body,.hh2-note{ opacity:1!important;transform:none!important; }
   .af-card{ width:min(320px,90vw); }
 
-  /* S6 — CTA */
-  .cta-pitch{ font-size:clamp(14px,3.8vw,18px); }
-  .cta-badges{ flex-direction:column;align-items:center;gap:10px; }
-  .badge{ width:min(260px,80vw);justify-content:center; }
-
-  /* Footer */
-  .ft-screens{ gap:5px;padding:32px 12px 0;overflow-x:auto; }
-  .fs{ width:clamp(88px,20vw,120px);flex-shrink:0; }
-  .ft-bar{ padding:16px 20px;gap:10px;flex-direction:column;align-items:flex-start; }
-  .ft-nav{ margin-left:0;gap:14px; }
-  .ft-copy{ margin-top:2px; }
+  /* CTA */
+  .cta2-badges{ flex-direction:column;align-items:center; }
+  .cta2-badge{ width:min(240px,78vw);justify-content:center; }
+  .ft2{ flex-direction:column;align-items:flex-start;gap:12px; }
+  .ft2-nav{ margin-left:0; }
+  .ft2-copy{ order:3; }
 }
 
 /* ═══ MOBILE ≤480px — very small phones ═══ */
@@ -1157,7 +1163,6 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
       <p class="hh2-eye">Your household</p>
       <h2 class="hh2-h">Plan together.<br><em>Or not.</em></h2>
       <p class="hh2-body">Add a partner, share your pantry, and let Miso plan for the whole table. Or keep it to yourself — every feature works either way.</p>
-      <p class="hh2-note">Up to 6 people · No subscription required to share</p>
     </div>
 
     <div class="hh2-vis">
@@ -1175,52 +1180,59 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 </section>
 
 <!-- ══════════════════════════════════
-     S6 · CTA
+     CTA + FOOTER
 ══════════════════════════════════ -->
-<section class="rm" id="s6">
-  <canvas id="cta-cv"></canvas>
-  <div class="cta-in">
-    <div class="cta-logo rv">
-      <img src="Assets%20of%20icon%20and%20also%20hte%20app%20itseld/icon-512.png" alt="Miso" width="44" height="44" style="border-radius:10px;">
-      <span class="cta-lname">Mi<span>so</span></span>
+<section id="s-cta">
+  <div class="cta2-in" id="cta2In">
+    <div class="cta2-body">
+
+      <div class="cta2-logo">
+        <img src="Assets%20of%20icon%20and%20also%20hte%20app%20itseld/icon-512.png" alt="Miso" width="52" height="52">
+        <span class="cta2-name">Miso</span>
+      </div>
+
+      <h2 class="cta2-line">Your kitchen,<br>finally on your side.</h2>
+
+      <div class="cta2-badges">
+        <!-- App Store -->
+        <a href="#" class="cta2-badge">
+          <svg width="20" height="24" viewBox="0 0 814 1000" fill="currentColor" style="color:var(--cream)">
+            <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.5-150.3-93.5c-52.8-65.3-95.2-170.6-95.2-271.5 0-183.1 119.5-280.2 237.2-280.2 61.6 0 112.9 40.5 151.2 40.5 36.7 0 94.6-42.8 163.5-42.8 26.4 0 109.5 2.6 163.5 70.5zm-234.5-218.8c31.3-35.2 54.5-84.1 54.5-133 0-6.4-.6-12.9-1.9-18.1-51.5 1.9-112.3 34.4-149.2 74.4-28.2 31.3-55.1 80.2-55.1 129.7 0 7.1 1.3 14.2 1.9 16.5 3.2.6 8.4 1.3 13.5 1.3 46.5 0 102.5-31.3 136.3-70.8z"/>
+          </svg>
+          <div class="cta2-btx"><small>Download on the</small><strong>App Store</strong></div>
+        </a>
+        <!-- Google Play -->
+        <a href="#" class="cta2-badge">
+          <svg width="20" height="22" viewBox="0 0 24 24" fill="none" style="color:var(--cream)">
+            <path d="M3.18 1.18C2.47 1.92 2.07 3.08 2.07 4.6v14.8c0 1.52.4 2.68 1.11 3.42l.18.17 8.29-8.29v-.2L3.36 6.21l-.18.17z" fill="#E3A14E"/>
+            <path d="M14.37 17.52l-2.76-2.77v-.2l2.76-2.77.06.03 3.27 1.86c.94.53.94 1.4 0 1.93l-3.27 1.86-.06.06z" fill="#E8876B"/>
+            <path d="M14.43 17.46L11.6 14.63 3.18 23.05c.31.33.74.53 1.25.56.63.03 1.26-.18 1.93-.56l8.07-4.59z" fill="#6F9E80"/>
+            <path d="M14.43 6.54L6.36 1.95C5.69 1.57 5.06 1.36 4.43 1.39c-.51.03-.94.23-1.25.56l8.42 8.42 2.83-2.83z" fill="#8B7EC8"/>
+          </svg>
+          <div class="cta2-btx"><small>Get it on</small><strong>Google Play</strong></div>
+        </a>
+        <!-- Web App -->
+        <a href="#" class="cta2-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cream)">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <div class="cta2-btx"><small>Open in browser</small><strong>Web App</strong></div>
+        </a>
+      </div>
+
     </div>
-    <p class="cta-pitch rv" style="transition-delay:.1s">
-      <em>Miso is the meal planner that starts in your pantry</em>, not a recipe rabbit hole. Tell Miso what you have, and it builds your whole week — <em>meals your family already loves</em>, a shopping list for only what's missing, and <em>zero Sunday-night stress.</em> 450+ dishes, 15 cuisines, smart leftover logic, shared with your household. <em>AI when you want it. Your recipes when you don't.</em>
-    </p>
-    <div class="cta-badges rv" style="transition-delay:.2s">
-      <!-- TODO: swap for official App Store / Google Play badge SVGs before launch -->
-      <a href="#" class="badge">
-        <span class="badge-ic">🍎</span>
-        <span class="badge-tx"><small>Download on the</small>App Store</span>
-      </a>
-      <a href="#" class="badge">
-        <span class="badge-ic">▶</span>
-        <span class="badge-tx"><small>Get it on</small>Google Play</span>
-      </a>
-    </div>
+
+    <footer class="ft2">
+      <span class="ft2-name">Mi<em>so</em></span>
+      <nav class="ft2-nav">
+        <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Support</a>
+      </nav>
+      <span class="ft2-copy">© 2025 Miso</span>
+    </footer>
   </div>
 </section>
-
-<!-- ══════════════════════════════════
-     FOOTER — corkboard
-══════════════════════════════════ -->
-<footer class="ft">
-  <div class="ft-screens">
-    <div class="fs" data-r="-6"><img src="App%20Screenshots/Weekly%20menu.png" alt="" loading="lazy"></div>
-    <div class="fs" data-r="-2"><img src="App%20Screenshots/Dishes.png" alt="" loading="lazy"></div>
-    <div class="fs" data-r="2"><img src="App%20Screenshots/Dish%20Modal.png" alt="" loading="lazy"></div>
-    <div class="fs" data-r="5"><img src="App%20Screenshots/Pantry.png" alt="" loading="lazy"></div>
-    <div class="fs" data-r="-1"><img src="App%20Screenshots/Summary%20page.png" alt="" loading="lazy"></div>
-    <div class="fs" data-r="7"><img src="App%20Screenshots/Ai%20Slot%20Slection.png" alt="" loading="lazy"></div>
-  </div>
-  <div class="ft-bar">
-    <span class="ft-name">Mi<span>so</span></span>
-    <nav class="ft-nav">
-      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Support</a><a href="#">Contact</a>
-    </nav>
-    <span class="ft-copy">© 2025 Miso · Made with appetite.</span>
-  </div>
-</footer>
 
 </div><!-- /root -->
 
@@ -1999,48 +2011,14 @@ function boot() {
     }, { threshold: 0.4 }).observe(hh2In);
   }
 
-  /* ── Footer 3D tilt ── */
-  document.querySelectorAll('.fs').forEach(el => {
-    const baseR = parseFloat(el.dataset.r) || 0;
-    el.addEventListener('mousemove', e => {
-      const r = el.getBoundingClientRect();
-      const dx = (e.clientX - r.left) / r.width * 2 - 1;
-      const dy = (e.clientY - r.top) / r.height * 2 - 1;
-      el.style.transform = `rotateZ(${baseR}deg) rotateX(${-dy*14}deg) rotateY(${dx*14}deg) scale(1.08) translateZ(20px)`;
-      el.style.boxShadow = '0 28px 72px rgba(0,0,0,.8), 0 0 36px rgba(227,161,78,.1)';
-      el.style.zIndex = '10';
-    });
-    el.addEventListener('mouseleave', () => {
-      el.style.transform = '';
-      el.style.boxShadow = '';
-      el.style.zIndex = '';
-    });
-  });
-
-  /* ── CTA spice particles ── */
-  const cv = document.getElementById('cta-cv');
-  if (cv) {
-    let CW, CH;
-    const resize = () => { CW = cv.width = cv.offsetWidth; CH = cv.height = cv.offsetHeight; };
-    resize(); addEventListener('resize', resize);
-    const cx = cv.getContext('2d');
-    const pts = Array.from({length:50}, () => ({
-      x:Math.random()*1400, y:Math.random()*700,
-      vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.18,
-      r:Math.random()*2+.5, h:Math.random()*40+15, a:Math.random()*.1+.03,
-    }));
-    (function drawCta(){
-      cv.width = cv.offsetWidth; cv.height = cv.offsetHeight;
-      const c2 = cv.getContext('2d'); c2.clearRect(0,0,cv.width,cv.height);
-      pts.forEach(p => {
-        p.x+=p.vx; p.y+=p.vy;
-        if(p.x<0)p.x=cv.width; if(p.x>cv.width)p.x=0;
-        if(p.y<0)p.y=cv.height; if(p.y>cv.height)p.y=0;
-        c2.beginPath(); c2.arc(p.x,p.y,p.r,0,Math.PI*2);
-        c2.fillStyle=`hsla(${p.h},70%,65%,${p.a})`; c2.fill();
-      });
-      requestAnimationFrame(drawCta);
-    })();
+  /* ── CTA reveal ── */
+  const cta2In = document.getElementById('cta2In');
+  if (cta2In) {
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        cta2In.classList.add('cta2--vis');
+      }
+    }, { threshold: 0.3 }).observe(cta2In);
   }
 
   /* ── Generic IO reveals ── */

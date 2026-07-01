@@ -1068,14 +1068,14 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
       </div>
       <div class="ap-vis">
         <div class="ci-stage">
-          <div class="ci-pill" style="--dx:-130px;--dy:-75px;--dd:0s">Tomato</div>
-          <div class="ci-pill" style="--dx:118px;--dy:-55px;--dd:.05s">Egg</div>
-          <div class="ci-pill" style="--dx:-108px;--dy:68px;--dd:.1s">Onion</div>
-          <div class="ci-pill" style="--dx:134px;--dy:78px;--dd:.03s">Garlic</div>
-          <div class="ci-pill" style="--dx:-28px;--dy:112px;--dd:.08s">Chili</div>
-          <div class="ci-pill" style="--dx:78px;--dy:-108px;--dd:.12s">Olive Oil</div>
+          <div class="ci-pill" style="--dx:-130px;--dy:-75px;--dd:0s">Noodles</div>
+          <div class="ci-pill" style="--dx:118px;--dy:-55px;--dd:.05s">Miso</div>
+          <div class="ci-pill" style="--dx:-108px;--dy:68px;--dd:.1s">Pork</div>
+          <div class="ci-pill" style="--dx:134px;--dy:78px;--dd:.03s">Nori</div>
+          <div class="ci-pill" style="--dx:-28px;--dy:112px;--dd:.08s">Ginger</div>
+          <div class="ci-pill" style="--dx:78px;--dy:-108px;--dd:.12s">Soy</div>
           <div class="ci-glow"></div>
-          <div class="ci-result">Shakshuka</div>
+          <div class="ci-result">Miso Ramen</div>
         </div>
       </div>
     </div>
@@ -1894,16 +1894,16 @@ function boot() {
     const urlEl   = document.getElementById('urlText');
     const titleEl = document.getElementById('urlRtitle');
     const pillsEl = document.getElementById('urlPills');
-    const urlStr  = 'nytcooking.com/recipes/cilbir-eggs';
+    const urlStr  = 'seriouseats.com/tacos-al-pastor';
     let ti = 0;
     const typer = setInterval(() => {
       if (urlEl) urlEl.textContent = urlStr.slice(0, ++ti);
       if (ti >= urlStr.length) clearInterval(typer);
     }, 38);
     setTimeout(() => {
-      if (titleEl) { titleEl.textContent = 'Çılbır — Turkish Poached Eggs'; titleEl.classList.add('on'); }
+      if (titleEl) { titleEl.textContent = 'Tacos al Pastor'; titleEl.classList.add('on'); }
     }, 900);
-    ['Eggs', 'Yogurt', 'Butter', 'Paprika', 'Dill', 'Garlic', 'Chilli'].forEach((name, idx) => {
+    ['Pork', 'Pineapple', 'Chipotle', 'Onion', 'Coriander', 'Lime', 'Tortillas'].forEach((name, idx) => {
       setTimeout(() => {
         if (!pillsEl) return;
         const p = document.createElement('div');
@@ -1972,10 +1972,10 @@ function boot() {
   let hhDone   = false;
 
   const afData = [
-    { init:'P', cls:'af-av--amber', who:'Priya', action:'added Chicken Thighs to pantry',  time:'just now' },
-    { init:'A', cls:'af-av--coral', who:'Aman',  action:'planned Thursday — Dal Makhani',  time:'2m ago'   },
-    { init:'✦', cls:'af-av--sage',  who:'Miso',  action:'updated your shopping list',      time:'5m ago'   },
-    { init:'K', cls:'af-av--lav',   who:'Kiran', action:'checked off 4 items',             time:'12m ago'  },
+    { init:'S', cls:'af-av--amber', who:'Sofia',  action:'added Sweet Potato to pantry',   time:'just now' },
+    { init:'O', cls:'af-av--coral', who:'Omar',   action:'planned Saturday — Lamb Köfte',  time:'2m ago'   },
+    { init:'✦', cls:'af-av--sage',  who:'Miso',   action:'updated your shopping list',     time:'5m ago'   },
+    { init:'Y', cls:'af-av--lav',   who:'Yuki',   action:'checked off 4 items',            time:'12m ago'  },
   ];
 
   if (hh2In && afItems) {

@@ -196,7 +196,9 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   background:transparent;
 }
 @media(max-width:768px){
-  #s2{ overflow-y:auto; }
+  #s2{ height:100svh;overflow-y:auto; }
+  .s2-tabs{ display:flex; }
+  .s2-nav{ display:none; }
 }
 
 /* Panels — all stacked in same space, only active one visible */
@@ -304,7 +306,29 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   font-family:var(--sans);font-size:14px;color:rgba(245,240,234,.65);line-height:1.4;
 }
 
-/* Navigation */
+/* Mobile top tabs */
+.s2-tabs{
+  display:none;
+  position:absolute;top:56px;left:0;right:0;z-index:10;
+  gap:6px;padding:8px 16px;
+  background:rgba(10,10,10,0.75);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(245,240,234,.06);
+}
+.s2-tab{
+  flex:1;padding:7px 4px;border-radius:6px;
+  font-family:var(--sans);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(245,240,234,.3);
+  background:rgba(245,240,234,.05);
+  border:1px solid rgba(245,240,234,.1);
+  transition:color .22s,background .22s,border-color .22s;
+  cursor:pointer;
+}
+.s2-tab.s2-tab--on{
+  color:var(--black);background:var(--amber);border-color:var(--amber);
+}
+
+/* Navigation (desktop) */
 .s2-nav{
   position:absolute;bottom:28px;left:0;right:0;
   display:flex;align-items:center;justify-content:center;gap:20px;
@@ -537,7 +561,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 /* ═══ MOBILE ≤768px ═══ */
 @media(max-width:768px){
   /* S2 — feature panels */
-  .fp{ padding:64px 18px 76px;overflow-y:auto; }
+  .fp{ padding:108px 18px 72px;overflow-y:auto; }
   .fp-split,.fp-split--rev{ flex-direction:column;gap:16px; }
   .fp-screen{ flex:none;width:min(180px,50vw);margin:0 auto; }
   .fp-eye{ margin:0 0 10px; }
@@ -585,7 +609,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 
 /* ═══ MOBILE ≤480px — very small phones ═══ */
 @media(max-width:480px){
-  .fp{ padding:56px 16px 68px; }
+  .fp{ padding:100px 16px 64px; }
   .fp-screen{ width:min(150px,44vw); }
   .fp-h{ font-size:clamp(20px,5.5vw,30px); }
   .fp-n{ font-size:clamp(32px,9vw,52px); }
@@ -766,7 +790,15 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
     </div>
   </div>
 
-  <!-- Navigation -->
+  <!-- Mobile top tab bar (hidden on desktop) -->
+  <div class="s2-tabs" id="s2Tabs">
+    <button class="s2-tab s2-tab--on" data-to="0">Plan</button>
+    <button class="s2-tab" data-to="1">Discover</button>
+    <button class="s2-tab" data-to="2">Inspire</button>
+    <button class="s2-tab" data-to="3">Remind</button>
+  </div>
+
+  <!-- Navigation (desktop) -->
   <div class="s2-nav" id="s2Nav">
     <button class="s2-arr" id="s2Prev" aria-label="Previous">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1444,6 +1476,7 @@ function boot() {
   /* ── S2: Feature panels — click/swipe navigation ── */
   const fps       = Array.from(document.querySelectorAll('.fp'));
   const navDots   = Array.from(document.querySelectorAll('.s2-dot'));
+  const tabBtns   = Array.from(document.querySelectorAll('.s2-tab'));
   const prevBtn   = document.getElementById('s2Prev');
   const nextBtn   = document.getElementById('s2Next');
   const fProxy    = { c: 0 };
@@ -1484,9 +1517,11 @@ function boot() {
       }
     });
 
-    // Dots + arrows
+    // Dots + arrows + tabs
     navDots[curFP].classList.remove('s2-dot--on');
     navDots[n].classList.add('s2-dot--on');
+    tabBtns[curFP].classList.remove('s2-tab--on');
+    tabBtns[n].classList.add('s2-tab--on');
     prevBtn.disabled = n === 0;
     nextBtn.disabled = n === fps.length - 1;
     curFP = n;
@@ -1497,6 +1532,7 @@ function boot() {
   prevBtn.addEventListener('click', () => goTo(curFP - 1));
   nextBtn.addEventListener('click', () => goTo(curFP + 1));
   navDots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.to)));
+  tabBtns.forEach(t => t.addEventListener('click', () => goTo(+t.dataset.to)));
 
   // Keyboard navigation when section is in view
   document.addEventListener('keydown', e => {

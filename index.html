@@ -362,40 +362,161 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 .s2-dot--on span{ color:rgba(245,240,234,.55); }
 
 
-/* ═══ S3 PLAN ═══ */
-#s3{background:var(--dw);align-items:stretch;min-height:100vh;padding:0;}
-.plan-wrap{width:100%;display:flex;flex-direction:column;padding:48px 0 0;}
-.plan-modes{
-  display:flex;gap:0;align-self:center;
-  border:1px solid rgba(255,255,255,.08);border-radius:100px;
-  padding:4px;margin-bottom:40px;
+/* ═══ S3 AI FEATURES ═══ */
+#s3{ position:relative;height:100vh;overflow:hidden;background:var(--dw); }
+
+.ap{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:clamp(56px,9vh,100px) clamp(24px,6vw,80px) 60px;
+  opacity:0;pointer-events:none;
 }
-.mode-btn{
-  padding:10px 24px;border-radius:100px;
-  font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;
-  color:rgba(255,255,255,.35);transition:all .3s;
+.ap.ap--active{ pointer-events:auto; }
+.ap::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 55% 45% at 50% 52%,rgba(227,161,78,.06) 0%,transparent 68%);
+  opacity:0;transition:opacity 1s ease;
 }
-.mode-btn.on{background:var(--amber);color:var(--black);}
-.plan-stage{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  gap:clamp(32px,6vw,80px);padding:0 48px 60px;
+.ap.ap--active::before{ opacity:1; }
+.ap-inner{
+  width:100%;max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;gap:clamp(40px,6vw,100px);
 }
-.plan-screen{
-  /* Natural ratio — no forced height, no distortion */
-  width:clamp(200px,22vw,260px);
-  border-radius:22px;overflow:hidden;flex-shrink:0;
-  box-shadow:0 0 80px rgba(227,161,78,.1),0 32px 80px rgba(0,0,0,.65);
-  border:1px solid rgba(227,161,78,.1);
-  background:var(--cream);
-  transition:opacity .4s ease;
+.ap-text{ flex:1;min-width:0; }
+.ap-eye{
+  font-family:var(--sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--amber);margin:0 0 16px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .5s ease,transform .5s ease;
 }
-.plan-screen img{width:100%;height:auto;display:block;} /* CRISP — natural ratio */
-.plan-copy{max-width:360px;}
-.plan-title{
-  font-family:var(--serif);font-style:italic;font-weight:600;
-  font-size:clamp(22px,2.8vw,36px);color:var(--cream);line-height:1.25;margin-bottom:12px;
+.ap-h{
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(28px,3.8vw,52px);color:var(--cream);
+  line-height:1.18;letter-spacing:-.01em;margin:0 0 20px;
+  opacity:0;transform:translateY(14px);
+  transition:opacity .6s .1s ease,transform .6s .1s ease;
 }
-.plan-desc{font-size:clamp(13px,1.1vw,16px);color:var(--cdim);line-height:1.7;}
+.ap-h em{ color:var(--amber);font-style:inherit; }
+.ap-body{
+  font-family:var(--sans);font-size:clamp(14px,1.35vw,16px);
+  color:rgba(245,240,234,.48);line-height:1.72;margin:0;max-width:380px;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .6s .2s ease,transform .6s .2s ease;
+}
+.ap.ap--active .ap-eye,
+.ap.ap--active .ap-h,
+.ap.ap--active .ap-body{ opacity:1;transform:none; }
+.ap-vis{
+  flex:0 0 clamp(240px,34vw,380px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .7s .15s ease,transform .7s .15s ease;
+}
+.ap.ap--active .ap-vis{ opacity:1;transform:none; }
+
+/* ─ Panel 1: Ingredient convergence ─ */
+.ci-stage{
+  position:relative;width:min(320px,72vw);height:220px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ci-pill{
+  position:absolute;top:50%;left:50%;
+  font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(245,240,234,.55);border:1px solid rgba(245,240,234,.2);
+  border-radius:20px;padding:4px 12px;white-space:nowrap;
+  transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)));
+  transition:transform .9s var(--dd,0s) cubic-bezier(.34,1,.64,1),
+             opacity .55s calc(var(--dd,0s) + .3s) ease;
+}
+.ap--active .ci-pill{ transform:translate(-50%,-50%);opacity:0; }
+.ci-glow{
+  position:absolute;width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle,rgba(227,161,78,.2) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  opacity:0;transition:opacity .6s .58s ease;pointer-events:none;
+}
+.ap--active .ci-glow{ opacity:1; }
+.ci-result{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(26px,3.5vw,42px);color:var(--amber);
+  letter-spacing:-.01em;white-space:nowrap;
+  text-shadow:0 0 44px rgba(227,161,78,.5);
+  opacity:0;filter:blur(10px);
+  transition:opacity .65s .88s ease,filter .65s .88s ease;
+  pointer-events:none;
+}
+.ap--active .ci-result{ opacity:1;filter:blur(0); }
+
+/* ─ Panel 2: Receipt scanner ─ */
+.rs-stage{ display:flex;flex-direction:column;align-items:center;gap:14px;width:min(210px,60vw); }
+.rs-frame{
+  position:relative;width:100%;height:190px;
+  border:1px solid rgba(227,161,78,.2);border-radius:12px;
+  background:rgba(6,5,4,.85);overflow:hidden;
+}
+.rs-corner{ position:absolute;width:14px;height:14px;border-color:var(--amber);border-style:solid; }
+.rs-tl{top:8px;left:8px;border-width:1.5px 0 0 1.5px;border-radius:3px 0 0 0;}
+.rs-tr{top:8px;right:8px;border-width:1.5px 1.5px 0 0;border-radius:0 3px 0 0;}
+.rs-bl{bottom:8px;left:8px;border-width:0 0 1.5px 1.5px;border-radius:0 0 0 3px;}
+.rs-br{bottom:8px;right:8px;border-width:0 1.5px 1.5px 0;border-radius:0 0 3px 0;}
+.rs-beam{
+  position:absolute;left:0;right:0;height:1.5px;
+  background:linear-gradient(to right,transparent,var(--amber),transparent);
+  box-shadow:0 0 8px rgba(227,161,78,.5);
+  animation:rsb 2.2s ease-in-out infinite;
+}
+@keyframes rsb{0%,100%{top:6%;}50%{top:88%;}}
+.rs-lines{ position:absolute;top:16px;left:14px;right:14px;display:flex;flex-direction:column;gap:9px; }
+.rs-line{ height:1px;background:rgba(255,255,255,.07);border-radius:1px; }
+.rs-chips{ display:flex;flex-direction:column;gap:6px;width:100%; }
+.rs-chip{
+  background:rgba(227,161,78,.08);border:1px solid rgba(227,161,78,.18);
+  border-radius:30px;padding:5px 13px;
+  font-family:var(--sans);font-size:11px;color:var(--amber);
+  display:flex;justify-content:space-between;
+  opacity:0;transform:translateX(-6px);transition:opacity .38s ease,transform .38s ease;
+}
+.rs-chip.on{ opacity:1;transform:translateX(0); }
+
+/* ─ Panel 3: URL → recipe ─ */
+.url-stage{ width:min(320px,76vw);display:flex;flex-direction:column;gap:12px; }
+.url-bar{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;padding:9px 14px;
+}
+.url-dots{ display:flex;gap:5px;flex-shrink:0; }
+.url-dots span{ width:8px;height:8px;border-radius:50%;display:block;opacity:.7; }
+.url-text{
+  font-family:var(--sans);font-size:11px;color:rgba(245,240,234,.3);
+  letter-spacing:.02em;white-space:nowrap;overflow:hidden;flex:1;min-width:0;
+}
+.url-recipe{
+  padding:14px 16px;display:flex;flex-direction:column;gap:10px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;
+}
+.url-rtitle{
+  font-family:var(--serif);font-style:italic;font-size:15px;
+  color:rgba(245,240,234,.65);min-height:20px;
+  opacity:0;transition:opacity .5s ease;
+}
+.url-rtitle.on{ opacity:1; }
+.url-pills{ display:flex;flex-wrap:wrap;gap:6px; }
+.url-pill{
+  font-family:var(--sans);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(245,240,234,.4);border:1px solid rgba(245,240,234,.14);
+  border-radius:20px;padding:3px 10px;white-space:nowrap;
+  opacity:0;transform:translateY(4px);transition:opacity .35s ease,transform .35s ease;
+}
+.url-pill.on{ opacity:1;transform:none; }
+
+/* Footer line */
+.s3-foot{
+  position:absolute;bottom:20px;left:0;right:0;text-align:center;
+  font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(245,240,234,.16);pointer-events:none;
+}
 
 /* ═══ S4 NERD / INTELLIGENCE ═══ */
 #s4{background:#0d0b08;padding:100px 48px;}
@@ -578,12 +699,17 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   .notif-msg{ font-size:12px; }
   .s2-dot span{ display:none; }
 
-  /* S3 — plan */
-  .plan-wrap{ padding:36px 0 0; }
-  .plan-stage{ flex-direction:column;padding:0 20px 40px;gap:22px; }
-  .plan-screen{ width:min(220px,70vw); }
-  .plan-modes{ margin-bottom:24px; }
-  .mode-btn{ padding:8px 14px;font-size:11px; }
+  /* S3 — AI features */
+  #s3{ height:auto;overflow:visible; }
+  .ap{ position:relative;opacity:1!important;pointer-events:auto;padding:48px 20px 40px;height:auto; }
+  .ap::before{ opacity:0!important; }
+  .ap-inner{ flex-direction:column;gap:24px; }
+  .ap-vis{ flex:none;width:100%;opacity:1!important;transform:none!important; }
+  .ap-eye,.ap-h,.ap-body{ opacity:1!important;transform:none!important; }
+  .ci-pill{ display:none; }
+  .ci-result{ opacity:1!important;filter:blur(0)!important;transition:none; }
+  .ci-glow{ opacity:1!important;transition:none; }
+  .s3-foot{ position:relative;bottom:auto;padding:8px 20px 36px; }
 
   /* S4 — intelligence */
   #s4{ padding:64px 20px; }
@@ -615,8 +741,9 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   .fp-screen{ width:min(150px,44vw); }
   .fp-h{ font-size:clamp(20px,5.5vw,30px); }
   .fp-n{ font-size:clamp(32px,9vw,52px); }
-  .plan-modes{ flex-wrap:wrap;justify-content:center;border-radius:14px; }
-  .mode-btn{ flex:0 0 auto; }
+  .ci-stage{ width:min(260px,80vw);height:160px; }
+  .rs-stage{ width:min(190px,70vw); }
+  .url-stage{ width:min(280px,80vw); }
   .hh-phones{ gap:0; }
   .hh-ph{ width:clamp(100px,28vw,140px); }
 }
@@ -821,23 +948,95 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 <!-- ══════════════════════════════════
      S3 · THE PLAN
 ══════════════════════════════════ -->
-<section class="rm" id="s3" style="align-items:stretch;background:var(--dw);">
-  <div class="plan-wrap">
-    <div class="plan-modes" id="planModes">
-      <button class="mode-btn on" data-m="0">Pantry-only</button>
-      <button class="mode-btn" data-m="1">+ Shopping</button>
-      <button class="mode-btn" data-m="2">Full AI</button>
-    </div>
-    <div class="plan-stage">
-      <div class="plan-screen" id="planScreen">
-        <img id="planImg" src="App%20Screenshots/Dishes.png" alt="App screen">
+<section id="s3">
+
+  <!-- Panel 1 — Cook Now -->
+  <div class="ap" id="ap1">
+    <div class="ap-inner">
+      <div class="ap-text">
+        <p class="ap-eye">Right now</p>
+        <h2 class="ap-h">What can I make<br><em>tonight?</em></h2>
+        <p class="ap-body">Pick your pantry. Miso finds every dish you can cook with what's already there.</p>
       </div>
-      <div class="plan-copy">
-        <h3 class="plan-title" id="planTitle">Cook from what you have.</h3>
-        <p class="plan-desc" id="planDesc">Browse every dish your stocked pantry can make right now. No shopping, no guesswork — if it's here, it's on the menu.</p>
+      <div class="ap-vis">
+        <div class="ci-stage">
+          <div class="ci-pill" style="--dx:-130px;--dy:-75px;--dd:0s">Tomato</div>
+          <div class="ci-pill" style="--dx:118px;--dy:-55px;--dd:.05s">Egg</div>
+          <div class="ci-pill" style="--dx:-108px;--dy:68px;--dd:.1s">Onion</div>
+          <div class="ci-pill" style="--dx:134px;--dy:78px;--dd:.03s">Garlic</div>
+          <div class="ci-pill" style="--dx:-28px;--dy:112px;--dd:.08s">Chili</div>
+          <div class="ci-pill" style="--dx:78px;--dy:-108px;--dd:.12s">Olive Oil</div>
+          <div class="ci-glow"></div>
+          <div class="ci-result">Shakshuka</div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Panel 2 — Scan Receipt -->
+  <div class="ap" id="ap2">
+    <div class="ap-inner">
+      <div class="ap-text">
+        <p class="ap-eye">At the checkout</p>
+        <h2 class="ap-h">Point. Shoot.<br><em>Stocked.</em></h2>
+        <p class="ap-body">Photograph your grocery receipt. Your pantry fills itself — review before saving.</p>
+      </div>
+      <div class="ap-vis">
+        <div class="rs-stage">
+          <div class="rs-frame">
+            <div class="rs-corner rs-tl"></div><div class="rs-corner rs-tr"></div>
+            <div class="rs-corner rs-bl"></div><div class="rs-corner rs-br"></div>
+            <div class="rs-beam"></div>
+            <div class="rs-lines">
+              <div class="rs-line" style="width:90%"></div>
+              <div class="rs-line" style="width:66%"></div>
+              <div class="rs-line" style="width:75%"></div>
+              <div class="rs-line" style="width:52%"></div>
+              <div class="rs-line" style="width:84%"></div>
+              <div class="rs-line" style="width:60%"></div>
+              <div class="rs-line" style="width:78%"></div>
+            </div>
+          </div>
+          <div class="rs-chips" id="rsChips">
+            <div class="rs-chip">Chicken Thighs <span>✓</span></div>
+            <div class="rs-chip">Baby Spinach <span>✓</span></div>
+            <div class="rs-chip">Sushi Rice <span>✓</span></div>
+            <div class="rs-chip">Spring Onion <span>✓</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 3 — Scan Recipe / URL -->
+  <div class="ap" id="ap3">
+    <div class="ap-inner">
+      <div class="ap-text">
+        <p class="ap-eye">Found something good</p>
+        <h2 class="ap-h">Seen a recipe?<br><em>It's yours now.</em></h2>
+        <p class="ap-body">Share a recipe link or photo. Miso reads the ingredients and adds the dish to your collection.</p>
+      </div>
+      <div class="ap-vis">
+        <div class="url-stage">
+          <div class="url-bar">
+            <div class="url-dots">
+              <span style="background:#E8876B"></span>
+              <span style="background:#E3A14E"></span>
+              <span style="background:#6F9E80"></span>
+            </div>
+            <div class="url-text" id="urlText"></div>
+          </div>
+          <div class="url-recipe">
+            <p class="url-rtitle" id="urlRtitle"></p>
+            <div class="url-pills" id="urlPills"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="s3-foot">Miso works without any of these. They're just nice to have.</p>
+
 </section>
 
 <!-- ══════════════════════════════════
@@ -1614,32 +1813,98 @@ function boot() {
     }, { threshold: 0.3 }).observe(s2el);
   }
 
-  /* ── S3: Plan mode toggle ── */
-  const planData = [
-    { img:'App%20Screenshots/Dishes.png',            title:'Cook from what you have.',      desc:'Browse every dish your stocked pantry can make right now. No shopping, no guesswork.' },
-    { img:'App%20Screenshots/Weekly%20menu.png',     title:'A short list, nothing more.',   desc:'"13 of 16 on hand. Missing Bok Choy, Salmon and Sushi Rice." The shopping list writes itself.' },
-    { img:'App%20Screenshots/Ai%20Slot%20Slection.png', title:'Tapped = AI suggests a dish.', desc:'Empty = picked from your own dishes. You choose how much help you want, meal by meal.' },
-  ];
-  const planImg   = document.getElementById('planImg');
-  const planTitle = document.getElementById('planTitle');
-  const planDesc  = document.getElementById('planDesc');
-  const planScr   = document.getElementById('planScreen');
+  /* ── S3: AI Feature panels ── */
+  const aps       = Array.from(document.querySelectorAll('.ap'));
+  let curAP       = 0;
+  let lastS3Idx   = 0;
+  let rsTriggered = false;
+  let urlTriggered= false;
 
-  document.querySelectorAll('.mode-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      const m = +btn.dataset.m;
-      planScr.style.opacity = '0';
+  const rsChipEls = Array.from(document.querySelectorAll('.rs-chip'));
+
+  function triggerRSChips() {
+    if (rsTriggered) return;
+    rsTriggered = true;
+    rsChipEls.forEach((chip, i) => setTimeout(() => chip.classList.add('on'), 550 + i * 380));
+  }
+
+  function triggerURL() {
+    if (urlTriggered) return;
+    urlTriggered = true;
+    const urlEl   = document.getElementById('urlText');
+    const titleEl = document.getElementById('urlRtitle');
+    const pillsEl = document.getElementById('urlPills');
+    const urlStr  = 'nytcooking.com/recipes/cilbir-eggs';
+    let ti = 0;
+    const typer = setInterval(() => {
+      if (urlEl) urlEl.textContent = urlStr.slice(0, ++ti);
+      if (ti >= urlStr.length) clearInterval(typer);
+    }, 38);
+    setTimeout(() => {
+      if (titleEl) { titleEl.textContent = 'Çılbır — Turkish Poached Eggs'; titleEl.classList.add('on'); }
+    }, 900);
+    ['Eggs', 'Yogurt', 'Butter', 'Paprika', 'Dill', 'Garlic', 'Chilli'].forEach((name, idx) => {
       setTimeout(() => {
-        planImg.src = planData[m].img;
-        planTitle.textContent = planData[m].title;
-        planDesc.textContent  = planData[m].desc;
-        planScr.style.opacity = '1';
-        planScr.style.transition = 'opacity .4s ease';
-      }, 180);
+        if (!pillsEl) return;
+        const p = document.createElement('div');
+        p.className = 'url-pill';
+        p.textContent = name;
+        pillsEl.appendChild(p);
+        requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('on')));
+      }, 1100 + idx * 170);
     });
-  });
+  }
+
+  function goToAP(n) {
+    if (n === curAP || n < 0 || n >= aps.length) return;
+    const from = aps[curAP], to = aps[n];
+    gsap.to(from, { opacity: 0, duration: .32, ease: 'power2.in', onComplete: () => {
+      from.classList.remove('ap--active');
+      to.classList.add('ap--active');
+      gsap.to(to, { opacity: 1, duration: .44, ease: 'power2.out' });
+      if (n === 1) triggerRSChips();
+      if (n === 2) triggerURL();
+    }});
+    curAP = n;
+  }
+
+  if (!isMobile) {
+    ScrollTrigger.create({
+      trigger: '#s3',
+      pin: true,
+      start: 'top top',
+      end: '+=200%',
+      anticipatePin: 1,
+      onEnter: () => {
+        if (!aps[0].classList.contains('ap--active')) {
+          aps[0].classList.add('ap--active');
+          gsap.to(aps[0], { opacity: 1, duration: .6, delay: .1 });
+        }
+      },
+      onLeaveBack: () => {
+        aps[curAP].classList.remove('ap--active');
+        gsap.to(aps[curAP], { opacity: 0, duration: .3 });
+      },
+      onEnterBack: () => {
+        aps[curAP].classList.add('ap--active');
+        gsap.to(aps[curAP], { opacity: 1, duration: .5 });
+      },
+      onUpdate: self => {
+        const idx = Math.min(aps.length - 1, Math.floor(self.progress * aps.length + 0.001));
+        if (idx !== lastS3Idx) { lastS3Idx = idx; goToAP(idx); }
+      }
+    });
+  } else {
+    /* Mobile: all panels stacked, trigger special animations when in view */
+    const ap2el = document.getElementById('ap2');
+    const ap3el = document.getElementById('ap3');
+    if (ap2el) new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) triggerRSChips();
+    }, { threshold: 0.4 }).observe(ap2el);
+    if (ap3el) new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) triggerURL();
+    }, { threshold: 0.4 }).observe(ap3el);
+  }
 
   /* ── Scan viewfinder: auto-trigger on scroll ── */
   let scanned = false;

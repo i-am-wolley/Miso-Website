@@ -721,15 +721,15 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 
 /* ═══ CTA + FOOTER ═══ */
 #s-cta{
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
+  display:flex;flex-direction:column;
+  align-items:center;
   background:radial-gradient(ellipse 60% 50% at 50% 60%,#1a1208 0%,var(--black) 65%);
-  padding:clamp(64px,10vh,120px) clamp(24px,6vw,80px) 0;
+  padding:clamp(80px,12vh,140px) clamp(24px,6vw,80px) 0;
   text-align:center;gap:0;
 }
 .cta2-in{
   width:100%;display:flex;flex-direction:column;align-items:center;
-  gap:0;flex:1;
+  gap:0;
 }
 .cta2-body{
   display:flex;flex-direction:column;align-items:center;
@@ -841,6 +841,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   .af-card{ width:min(320px,90vw); }
 
   /* CTA */
+  #s-cta{ padding:clamp(60px,10vh,100px) 20px 0; }
   .cta2-badges{ flex-direction:column;align-items:center; }
   .cta2-badge{ width:min(240px,78vw);justify-content:center; }
   .ft2{ flex-direction:column;align-items:flex-start;gap:12px; }

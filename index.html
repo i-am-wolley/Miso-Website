@@ -199,8 +199,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   #s2{ height:100svh;overflow-y:auto; }
   .s2-tabs{ display:flex; }
   .s2-nav{ display:none; }
-  /* Pin content to top so it sits right under the tab bar */
-  .fp{ padding:96px 18px 24px;align-items:flex-start; }
+  .fp{ align-items:flex-start; }
 }
 
 /* Panels — all stacked in same space, only active one visible */
@@ -361,6 +360,33 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 }
 .s2-dot--on span{ color:rgba(245,240,234,.55); }
 
+/* Swipe hint (mobile only) */
+.s2-swipe-hint{
+  display:none;
+  position:absolute;bottom:24px;left:0;right:0;z-index:11;
+  align-items:center;justify-content:center;gap:10px;
+  pointer-events:none;
+  color:rgba(245,240,234,.3);
+  opacity:1;transition:opacity .7s ease;
+}
+.s2-swipe-hint.fade{ opacity:0; }
+.s2-swipe-hint span{
+  font-family:var(--sans);font-size:9px;letter-spacing:.22em;text-transform:uppercase;
+}
+.sh-arr{ display:flex;align-items:center; }
+.sh-arr--l{ animation:shL .95s ease-in-out infinite; }
+.sh-arr--r{ animation:shR .95s ease-in-out infinite; }
+@keyframes shL{
+  0%,100%{ transform:translateX(0);opacity:.3; }
+  50%{     transform:translateX(-5px);opacity:.7; }
+}
+@keyframes shR{
+  0%,100%{ transform:translateX(0);opacity:.3; }
+  50%{     transform:translateX(5px);opacity:.7; }
+}
+@media(max-width:768px){
+  .s2-swipe-hint{ display:flex; }
+}
 
 /* Nerd panel rule cards */
 .nr-cards{
@@ -807,7 +833,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   #s1{ padding-top:clamp(56px,9vh,72px); }
 
   /* S2 — feature panels */
-  .fp{ padding:88px 18px 60px;overflow-y:auto; }
+  .fp{ padding:120px 18px 72px;overflow-y:auto; }
   .fp-split,.fp-split--rev{ flex-direction:column;gap:16px; }
   .fp-screen{ flex:none;width:min(180px,50vw);margin:0 auto; }
   .fp-eye{ margin:0 0 10px; }
@@ -851,7 +877,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 
 /* ═══ MOBILE ≤480px — very small phones ═══ */
 @media(max-width:480px){
-  .fp{ padding:76px 14px 20px; }
+  .fp{ padding:108px 14px 60px; }
   .fp-screen{ width:min(150px,44vw); }
   .fp-h{ font-size:clamp(20px,5.5vw,30px); }
   .fp-n{ font-size:clamp(32px,9vw,52px); }
@@ -1099,6 +1125,17 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
     <button class="s2-arr" id="s2Next" aria-label="Next">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
+  </div>
+
+  <!-- Swipe hint (mobile only, auto-hides after first navigation) -->
+  <div class="s2-swipe-hint" id="s2SwipeHint">
+    <div class="sh-arr sh-arr--l">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <span>swipe</span>
+    <div class="sh-arr sh-arr--r">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
   </div>
 
 </section>
@@ -1818,9 +1855,18 @@ function boot() {
     });
   }
 
+  const swipeHint = document.getElementById('s2SwipeHint');
+  let hintGone = false;
+  function hideSwipeHint() {
+    if (hintGone || !swipeHint) return;
+    hintGone = true;
+    swipeHint.classList.add('fade');
+  }
+
   function goTo(n) {
     if (n === curFP || n < 0 || n >= fps.length || s2Busy) return;
     s2Busy = true;
+    hideSwipeHint();
 
     const from = fps[curFP];
     const to   = fps[n];
@@ -1923,6 +1969,7 @@ function boot() {
         fps[0].classList.add('fp--active');
         gsap.to(fps[0], { opacity: 1, duration: .6, delay: .15 });
         prevBtn.disabled = true;
+        setTimeout(hideSwipeHint, 3500);
       }
       if (!isIn && s2Ready) {
         gsap.to(fProxy, { c: 0, duration: .9, ease: 'power2.inOut',

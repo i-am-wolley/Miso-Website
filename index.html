@@ -362,104 +362,112 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 .s2-dot--on span{ color:rgba(245,240,234,.55); }
 
 
-/* ═══ S3 AI FEATURES ═══ */
-#s3{ position:relative;height:100vh;overflow:hidden;background:var(--dw); }
+/* Nerd panel rule cards */
+.nr-cards{
+  display:flex;flex-direction:column;
+  width:min(340px,100%);
+  border:1px solid rgba(255,255,255,.07);border-radius:14px;
+  overflow:hidden;background:rgba(255,255,255,.025);
+}
+.nr-card{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 18px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  opacity:0;transform:translateX(10px);
+  transition:opacity .45s ease,transform .45s ease;
+}
+.nr-card:last-child{ border-bottom:none; }
+.fp.fp--active .nr-card{ opacity:1;transform:none; }
+.fp.fp--active .nr-card:nth-child(1){ transition-delay:.14s; }
+.fp.fp--active .nr-card:nth-child(2){ transition-delay:.24s; }
+.fp.fp--active .nr-card:nth-child(3){ transition-delay:.34s; }
+.fp.fp--active .nr-card:nth-child(4){ transition-delay:.44s; }
+.nr-dot{ width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px; }
+.nr-rule{
+  display:block;font-family:var(--sans);font-size:11px;font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--cream);margin-bottom:3px;
+}
+.nr-desc{ font-family:var(--sans);font-size:12px;color:rgba(245,240,234,.36);line-height:1.55; }
 
-.ap{
-  position:absolute;inset:0;
+/* ═══ S3 AI FEATURES (single grid panel) ═══ */
+#s3{
+  position:relative;overflow:hidden;background:var(--dw);
   display:flex;align-items:center;justify-content:center;
-  padding:clamp(56px,9vh,100px) clamp(24px,6vw,80px) 60px;
-  opacity:0;pointer-events:none;
+  padding:clamp(72px,11vh,120px) clamp(24px,6vw,80px) clamp(60px,8vh,100px);
 }
-.ap.ap--active{ pointer-events:auto; }
-.ap::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 55% 45% at 50% 52%,rgba(227,161,78,.06) 0%,transparent 68%);
-  opacity:0;transition:opacity 1s ease;
+.s3-in{
+  width:100%;max-width:1080px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:clamp(36px,5vh,52px);
 }
-.ap.ap--active::before{ opacity:1; }
-.ap-inner{
-  width:100%;max-width:1100px;margin:0 auto;
-  display:flex;align-items:center;gap:clamp(40px,6vw,100px);
-}
-.ap-text{ flex:1;min-width:0; }
-.ap-eye{
+.s3-over{
   font-family:var(--sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--amber);margin:0 0 16px;
-  opacity:0;transform:translateY(10px);
-  transition:opacity .5s ease,transform .5s ease;
+  color:rgba(245,240,234,.28);margin:0;
 }
-.ap-h{
-  font-family:var(--serif);font-style:italic;
-  font-size:clamp(28px,3.8vw,52px);color:var(--cream);
-  line-height:1.18;letter-spacing:-.01em;margin:0 0 20px;
-  opacity:0;transform:translateY(14px);
-  transition:opacity .6s .1s ease,transform .6s .1s ease;
+.s3-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%;
 }
-.ap-h em{ color:var(--amber);font-style:inherit; }
-.ap-body{
-  font-family:var(--sans);font-size:clamp(14px,1.35vw,16px);
-  color:rgba(245,240,234,.48);line-height:1.72;margin:0;max-width:380px;
-  opacity:0;transform:translateY(10px);
-  transition:opacity .6s .2s ease,transform .6s .2s ease;
+.s3-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:24px 20px;
+  display:flex;flex-direction:column;gap:14px;
+  opacity:0;transform:translateY(18px);
+  transition:opacity .55s ease,transform .55s ease;
 }
-.ap.ap--active .ap-eye,
-.ap.ap--active .ap-h,
-.ap.ap--active .ap-body{ opacity:1;transform:none; }
-.ap-vis{
-  flex:0 0 clamp(240px,34vw,380px);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;transform:translateY(16px);
-  transition:opacity .7s .15s ease,transform .7s .15s ease;
+.s3-card.on{ opacity:1;transform:none; }
+.s3-clabel{
+  font-family:var(--sans);font-size:10px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--amber);
 }
-.ap.ap--active .ap-vis{ opacity:1;transform:none; }
+.s3-cvis{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  min-height:152px;
+}
+.s3-cdesc{
+  font-family:var(--sans);font-size:12.5px;color:rgba(245,240,234,.4);
+  line-height:1.65;margin:0;
+}
+.s3-foot{
+  font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(245,240,234,.16);text-align:center;margin:0;
+}
 
-/* ─ Panel 1: Ingredient convergence ─ */
+/* ─ Cook Now: ingredient convergence ─ */
 .ci-stage{
-  position:relative;width:min(320px,72vw);height:220px;
+  position:relative;width:min(210px,65vw);height:148px;
   display:flex;align-items:center;justify-content:center;
 }
 .ci-pill{
   position:absolute;top:50%;left:50%;
-  font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-  color:rgba(245,240,234,.55);border:1px solid rgba(245,240,234,.2);
-  border-radius:20px;padding:4px 12px;white-space:nowrap;
+  font-family:var(--sans);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(245,240,234,.32);border:1px solid rgba(245,240,234,.13);
+  border-radius:20px;padding:3px 9px;white-space:nowrap;
   transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)));
-  transition:transform .9s var(--dd,0s) cubic-bezier(.34,1,.64,1),
-             opacity .55s calc(var(--dd,0s) + .3s) ease;
 }
-.ap--active .ci-pill{ transform:translate(-50%,-50%);opacity:0; }
 .ci-glow{
-  position:absolute;width:140px;height:140px;border-radius:50%;
-  background:radial-gradient(circle,rgba(227,161,78,.2) 0%,transparent 70%);
-  top:50%;left:50%;transform:translate(-50%,-50%);
-  opacity:0;transition:opacity .6s .58s ease;pointer-events:none;
+  position:absolute;width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle,rgba(227,161,78,.25) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
 }
-.ap--active .ci-glow{ opacity:1; }
 .ci-result{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   font-family:var(--serif);font-style:italic;
-  font-size:clamp(26px,3.5vw,42px);color:var(--amber);
+  font-size:clamp(20px,2.5vw,28px);color:var(--amber);
   letter-spacing:-.01em;white-space:nowrap;
-  text-shadow:0 0 44px rgba(227,161,78,.5);
-  opacity:0;filter:blur(10px);
-  transition:opacity .65s .88s ease,filter .65s .88s ease;
-  pointer-events:none;
+  text-shadow:0 0 28px rgba(227,161,78,.55);pointer-events:none;
 }
-.ap--active .ci-result{ opacity:1;filter:blur(0); }
 
-/* ─ Panel 2: Receipt scanner ─ */
-.rs-stage{ display:flex;flex-direction:column;align-items:center;gap:14px;width:min(210px,60vw); }
+/* ─ Scan Receipt: scanner ─ */
+.rs-stage{ display:flex;flex-direction:column;align-items:center;gap:10px;width:min(155px,52vw); }
 .rs-frame{
-  position:relative;width:100%;height:190px;
-  border:1px solid rgba(227,161,78,.2);border-radius:12px;
+  position:relative;width:100%;height:136px;
+  border:1px solid rgba(227,161,78,.2);border-radius:10px;
   background:rgba(6,5,4,.85);overflow:hidden;
 }
-.rs-corner{ position:absolute;width:14px;height:14px;border-color:var(--amber);border-style:solid; }
-.rs-tl{top:8px;left:8px;border-width:1.5px 0 0 1.5px;border-radius:3px 0 0 0;}
-.rs-tr{top:8px;right:8px;border-width:1.5px 1.5px 0 0;border-radius:0 3px 0 0;}
-.rs-bl{bottom:8px;left:8px;border-width:0 0 1.5px 1.5px;border-radius:0 0 0 3px;}
-.rs-br{bottom:8px;right:8px;border-width:0 1.5px 1.5px 0;border-radius:0 0 3px 0;}
+.rs-corner{ position:absolute;width:12px;height:12px;border-color:var(--amber);border-style:solid; }
+.rs-tl{top:6px;left:6px;border-width:1.5px 0 0 1.5px;border-radius:3px 0 0 0;}
+.rs-tr{top:6px;right:6px;border-width:1.5px 1.5px 0 0;border-radius:0 3px 0 0;}
+.rs-bl{bottom:6px;left:6px;border-width:0 0 1.5px 1.5px;border-radius:0 0 0 3px;}
+.rs-br{bottom:6px;right:6px;border-width:0 1.5px 1.5px 0;border-radius:0 0 3px 0;}
 .rs-beam{
   position:absolute;left:0;right:0;height:1.5px;
   background:linear-gradient(to right,transparent,var(--amber),transparent);
@@ -467,55 +475,44 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   animation:rsb 2.2s ease-in-out infinite;
 }
 @keyframes rsb{0%,100%{top:6%;}50%{top:88%;}}
-.rs-lines{ position:absolute;top:16px;left:14px;right:14px;display:flex;flex-direction:column;gap:9px; }
+.rs-lines{ position:absolute;top:14px;left:12px;right:12px;display:flex;flex-direction:column;gap:8px; }
 .rs-line{ height:1px;background:rgba(255,255,255,.07);border-radius:1px; }
-.rs-chips{ display:flex;flex-direction:column;gap:6px;width:100%; }
+.rs-chips{ display:flex;flex-direction:column;gap:5px;width:100%; }
 .rs-chip{
   background:rgba(227,161,78,.08);border:1px solid rgba(227,161,78,.18);
-  border-radius:30px;padding:5px 13px;
-  font-family:var(--sans);font-size:11px;color:var(--amber);
+  border-radius:30px;padding:4px 11px;
+  font-family:var(--sans);font-size:10px;color:var(--amber);
   display:flex;justify-content:space-between;
   opacity:0;transform:translateX(-6px);transition:opacity .38s ease,transform .38s ease;
 }
 .rs-chip.on{ opacity:1;transform:translateX(0); }
 
-/* ─ Panel 3: URL → recipe ─ */
-.url-stage{ width:min(320px,76vw);display:flex;flex-direction:column;gap:12px; }
+/* ─ Import Recipe: URL card ─ */
+.url-stage{ width:min(230px,70vw);display:flex;flex-direction:column;gap:10px; }
 .url-bar{
-  display:flex;align-items:center;gap:10px;
+  display:flex;align-items:center;gap:8px;
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;padding:9px 14px;
+  border-radius:7px;padding:7px 12px;
 }
-.url-dots{ display:flex;gap:5px;flex-shrink:0; }
-.url-dots span{ width:8px;height:8px;border-radius:50%;display:block;opacity:.7; }
+.url-dots{ display:flex;gap:4px;flex-shrink:0; }
+.url-dots span{ width:7px;height:7px;border-radius:50%;display:block;opacity:.7; }
 .url-text{
-  font-family:var(--sans);font-size:11px;color:rgba(245,240,234,.3);
+  font-family:var(--sans);font-size:10px;color:rgba(245,240,234,.3);
   letter-spacing:.02em;white-space:nowrap;overflow:hidden;flex:1;min-width:0;
 }
 .url-recipe{
-  padding:14px 16px;display:flex;flex-direction:column;gap:10px;
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:8px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:7px;
 }
 .url-rtitle{
-  font-family:var(--serif);font-style:italic;font-size:15px;
-  color:rgba(245,240,234,.65);min-height:20px;
-  opacity:0;transition:opacity .5s ease;
+  font-family:var(--serif);font-style:italic;font-size:14px;
+  color:rgba(245,240,234,.65);
 }
-.url-rtitle.on{ opacity:1; }
-.url-pills{ display:flex;flex-wrap:wrap;gap:6px; }
+.url-pills{ display:flex;flex-wrap:wrap;gap:5px; }
 .url-pill{
-  font-family:var(--sans);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  font-family:var(--sans);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
   color:rgba(245,240,234,.4);border:1px solid rgba(245,240,234,.14);
-  border-radius:20px;padding:3px 10px;white-space:nowrap;
-  opacity:0;transform:translateY(4px);transition:opacity .35s ease,transform .35s ease;
-}
-.url-pill.on{ opacity:1;transform:none; }
-
-/* Footer line */
-.s3-foot{
-  position:absolute;bottom:20px;left:0;right:0;text-align:center;
-  font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-  color:rgba(245,240,234,.16);pointer-events:none;
+  border-radius:20px;padding:2px 9px;white-space:nowrap;
 }
 
 /* ═══ S4 HOUSEHOLD — THE TABLE ═══ */
@@ -806,8 +803,11 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 
 /* ═══ MOBILE ≤768px ═══ */
 @media(max-width:768px){
+  /* S1 — push hero below fixed nav so counter is visible */
+  #s1{ padding-top:clamp(56px,9vh,72px); }
+
   /* S2 — feature panels */
-  .fp{ padding:108px 18px 72px;overflow-y:auto; }
+  .fp{ padding:88px 18px 60px;overflow-y:auto; }
   .fp-split,.fp-split--rev{ flex-direction:column;gap:16px; }
   .fp-screen{ flex:none;width:min(180px,50vw);margin:0 auto; }
   .fp-eye{ margin:0 0 10px; }
@@ -822,17 +822,16 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   .notif-msg{ font-size:12px; }
   .s2-dot span{ display:none; }
 
-  /* S3 — AI features */
-  #s3{ height:auto;overflow:visible; }
-  .ap{ position:relative;opacity:1!important;pointer-events:auto;padding:48px 20px 40px;height:auto; }
-  .ap::before{ opacity:0!important; }
-  .ap-inner{ flex-direction:column;gap:24px; }
-  .ap-vis{ flex:none;width:100%;opacity:1!important;transform:none!important; }
-  .ap-eye,.ap-h,.ap-body{ opacity:1!important;transform:none!important; }
-  .ci-pill{ display:none; }
-  .ci-result{ opacity:1!important;filter:blur(0)!important;transition:none; }
-  .ci-glow{ opacity:1!important;transition:none; }
-  .s3-foot{ position:relative;bottom:auto;padding:8px 20px 36px; }
+  /* S3 — AI features grid */
+  #s3{ padding:48px 16px 44px; }
+  .s3-grid{ grid-template-columns:1fr;gap:12px; }
+  .s3-card{ padding:20px 16px; }
+  .s3-cvis{ min-height:130px; }
+  .ci-stage{ width:min(190px,72vw);height:126px; }
+  .rs-stage{ width:min(148px,55vw); }
+  .url-stage{ width:min(210px,78vw); }
+  #fp5 .fp-screen{ flex:none;width:100%;max-width:none; }
+  .nr-cards{ width:100%; }
 
   /* S4 — household table */
   #s-hh{ padding:56px 20px 48px; min-height:auto; }
@@ -851,15 +850,14 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 
 /* ═══ MOBILE ≤480px — very small phones ═══ */
 @media(max-width:480px){
-  .fp{ padding:92px 16px 20px; }
+  .fp{ padding:76px 14px 20px; }
   .fp-screen{ width:min(150px,44vw); }
   .fp-h{ font-size:clamp(20px,5.5vw,30px); }
   .fp-n{ font-size:clamp(32px,9vw,52px); }
-  .ci-stage{ width:min(260px,80vw);height:160px; }
-  .rs-stage{ width:min(190px,70vw); }
-  .url-stage{ width:min(280px,80vw); }
-  .hh-phones{ gap:0; }
-  .hh-ph{ width:clamp(100px,28vw,140px); }
+  .ci-stage{ width:min(170px,76vw);height:116px; }
+  .rs-stage{ width:min(138px,60vw); }
+  .url-stage{ width:min(192px,82vw); }
+  .nr-cards{ width:100%; }
 }
 </style>
 </head>
@@ -890,7 +888,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
       <span>App Store</span>
     </a>
     <a class="nav-btn" href="#" aria-label="Get it on Google Play">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <svg width="15" height="17" viewBox="0 0 24 24" fill="none"><path d="M3.18 1.18C2.47 1.92 2.07 3.08 2.07 4.6v14.8c0 1.52.4 2.68 1.11 3.42l.18.17 8.29-8.29v-.2L3.36 6.21l-.18.17z" fill="#E3A14E"/><path d="M14.37 17.52l-2.76-2.77v-.2l2.76-2.77.06.03 3.27 1.86c.94.53.94 1.4 0 1.93l-3.27 1.86-.06.06z" fill="#E8876B"/><path d="M14.43 17.46L11.6 14.63 3.18 23.05c.31.33.74.53 1.25.56.63.03 1.26-.18 1.93-.56l8.07-4.59z" fill="#6F9E80"/><path d="M14.43 6.54L6.36 1.95C5.69 1.57 5.06 1.36 4.43 1.39c-.51.03-.94.23-1.25.56l8.42 8.42 2.83-2.83z" fill="#8B7EC8"/></svg>
       <span>Google Play</span>
     </a>
     <a class="nav-btn nav-btn--primary" href="#" aria-label="Open Web App">
@@ -1033,12 +1031,56 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
     </div>
   </div>
 
+  <!-- Panel 5 — Smart planning rules / grid formation -->
+  <div class="fp" id="fp5">
+    <div class="fp-inner fp-split">
+      <div class="fp-text">
+        <p class="fp-eye">Under the hood</p>
+        <h2 class="fp-h">Rules that think<br>so you don't<br><em>have to.</em></h2>
+        <p class="fp-body">Tune how Miso plans — or just leave it to run. These are the dials under the surface.</p>
+      </div>
+      <div class="fp-screen">
+        <div class="nr-cards">
+          <div class="nr-card">
+            <div class="nr-dot" style="background:var(--amber)"></div>
+            <div>
+              <span class="nr-rule">Stock-first</span>
+              <span class="nr-desc">Only suggests dishes you can make right now. No phantom grocery trips.</span>
+            </div>
+          </div>
+          <div class="nr-card">
+            <div class="nr-dot" style="background:var(--coral)"></div>
+            <div>
+              <span class="nr-rule">No clashes</span>
+              <span class="nr-desc">Two dishes sharing a key ingredient won't land on the same week.</span>
+            </div>
+          </div>
+          <div class="nr-card">
+            <div class="nr-dot" style="background:var(--sage)"></div>
+            <div>
+              <span class="nr-rule">Rotation control</span>
+              <span class="nr-desc">Choose how often a dish cycles back — weekly, fortnightly, or rarely.</span>
+            </div>
+          </div>
+          <div class="nr-card">
+            <div class="nr-dot" style="background:var(--lavender)"></div>
+            <div>
+              <span class="nr-rule">Weekend mode</span>
+              <span class="nr-desc">Some dishes only appear on weekends. Because Saturday cooking is different.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile top tab bar (hidden on desktop) -->
   <div class="s2-tabs" id="s2Tabs">
     <button class="s2-tab s2-tab--on" data-to="0">Plan</button>
     <button class="s2-tab" data-to="1">Discover</button>
     <button class="s2-tab" data-to="2">Inspire</button>
     <button class="s2-tab" data-to="3">Remind</button>
+    <button class="s2-tab" data-to="4">Nerd</button>
   </div>
 
   <!-- Navigation (desktop) -->
@@ -1051,6 +1093,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
       <button class="s2-dot" data-to="1"><span>Discover</span></button>
       <button class="s2-dot" data-to="2"><span>Inspire</span></button>
       <button class="s2-dot" data-to="3"><span>Remind</span></button>
+      <button class="s2-dot" data-to="4"><span>Nerd</span></button>
     </div>
     <button class="s2-arr" id="s2Next" aria-label="Next">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1060,97 +1103,93 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 </section>
 
 <!-- ══════════════════════════════════
-     S3 · THE PLAN
+     S3 · AI — ONLY WHEN NEEDED
 ══════════════════════════════════ -->
 <section id="s3">
+  <div class="s3-in">
 
-  <!-- Panel 1 — Cook Now -->
-  <div class="ap" id="ap1">
-    <div class="ap-inner">
-      <div class="ap-text">
-        <p class="ap-eye">Right now</p>
-        <h2 class="ap-h">What can I make<br><em>tonight?</em></h2>
-        <p class="ap-body">Pick your pantry. Miso finds every dish you can cook with what's already there.</p>
-      </div>
-      <div class="ap-vis">
-        <div class="ci-stage">
-          <div class="ci-pill" style="--dx:-130px;--dy:-75px;--dd:0s">Noodles</div>
-          <div class="ci-pill" style="--dx:118px;--dy:-55px;--dd:.05s">Miso</div>
-          <div class="ci-pill" style="--dx:-108px;--dy:68px;--dd:.1s">Pork</div>
-          <div class="ci-pill" style="--dx:134px;--dy:78px;--dd:.03s">Nori</div>
-          <div class="ci-pill" style="--dx:-28px;--dy:112px;--dd:.08s">Ginger</div>
-          <div class="ci-pill" style="--dx:78px;--dy:-108px;--dd:.12s">Soy</div>
-          <div class="ci-glow"></div>
-          <div class="ci-result">Miso Ramen</div>
+    <p class="s3-over">Optional features</p>
+
+    <div class="s3-grid">
+
+      <!-- Card 1: Cook Now -->
+      <div class="s3-card">
+        <span class="s3-clabel">Cook Now</span>
+        <div class="s3-cvis">
+          <div class="ci-stage">
+            <div class="ci-pill" style="--dx:-72px;--dy:-44px">Noodles</div>
+            <div class="ci-pill" style="--dx:64px;--dy:-36px">Miso</div>
+            <div class="ci-pill" style="--dx:-60px;--dy:42px">Pork</div>
+            <div class="ci-pill" style="--dx:66px;--dy:48px">Nori</div>
+            <div class="ci-pill" style="--dx:-12px;--dy:68px">Ginger</div>
+            <div class="ci-pill" style="--dx:42px;--dy:-64px">Soy</div>
+            <div class="ci-glow"></div>
+            <div class="ci-result">Miso Ramen</div>
+          </div>
         </div>
+        <p class="s3-cdesc">Open your pantry. Miso finds every dish you can make — right now.</p>
       </div>
-    </div>
-  </div>
 
-  <!-- Panel 2 — Scan Receipt -->
-  <div class="ap" id="ap2">
-    <div class="ap-inner">
-      <div class="ap-text">
-        <p class="ap-eye">At the checkout</p>
-        <h2 class="ap-h">Point. Shoot.<br><em>Stocked.</em></h2>
-        <p class="ap-body">Photograph your grocery receipt. Your pantry fills itself — review before saving.</p>
-      </div>
-      <div class="ap-vis">
-        <div class="rs-stage">
-          <div class="rs-frame">
-            <div class="rs-corner rs-tl"></div><div class="rs-corner rs-tr"></div>
-            <div class="rs-corner rs-bl"></div><div class="rs-corner rs-br"></div>
-            <div class="rs-beam"></div>
-            <div class="rs-lines">
-              <div class="rs-line" style="width:90%"></div>
-              <div class="rs-line" style="width:66%"></div>
-              <div class="rs-line" style="width:75%"></div>
-              <div class="rs-line" style="width:52%"></div>
-              <div class="rs-line" style="width:84%"></div>
-              <div class="rs-line" style="width:60%"></div>
-              <div class="rs-line" style="width:78%"></div>
+      <!-- Card 2: Scan Receipt -->
+      <div class="s3-card">
+        <span class="s3-clabel">Scan Receipt</span>
+        <div class="s3-cvis">
+          <div class="rs-stage">
+            <div class="rs-frame">
+              <div class="rs-corner rs-tl"></div><div class="rs-corner rs-tr"></div>
+              <div class="rs-corner rs-bl"></div><div class="rs-corner rs-br"></div>
+              <div class="rs-beam"></div>
+              <div class="rs-lines">
+                <div class="rs-line" style="width:88%"></div>
+                <div class="rs-line" style="width:62%"></div>
+                <div class="rs-line" style="width:76%"></div>
+                <div class="rs-line" style="width:50%"></div>
+                <div class="rs-line" style="width:82%"></div>
+              </div>
+            </div>
+            <div class="rs-chips">
+              <div class="rs-chip">Chicken Thighs <span>✓</span></div>
+              <div class="rs-chip">Sushi Rice <span>✓</span></div>
+              <div class="rs-chip">Spring Onion <span>✓</span></div>
             </div>
           </div>
-          <div class="rs-chips" id="rsChips">
-            <div class="rs-chip">Chicken Thighs <span>✓</span></div>
-            <div class="rs-chip">Baby Spinach <span>✓</span></div>
-            <div class="rs-chip">Sushi Rice <span>✓</span></div>
-            <div class="rs-chip">Spring Onion <span>✓</span></div>
-          </div>
         </div>
+        <p class="s3-cdesc">Photograph your receipt. Your pantry fills itself.</p>
       </div>
-    </div>
-  </div>
 
-  <!-- Panel 3 — Scan Recipe / URL -->
-  <div class="ap" id="ap3">
-    <div class="ap-inner">
-      <div class="ap-text">
-        <p class="ap-eye">Found something good</p>
-        <h2 class="ap-h">Seen a recipe?<br><em>It's yours now.</em></h2>
-        <p class="ap-body">Share a recipe link or photo. Miso reads the ingredients and adds the dish to your collection.</p>
-      </div>
-      <div class="ap-vis">
-        <div class="url-stage">
-          <div class="url-bar">
-            <div class="url-dots">
-              <span style="background:#E8876B"></span>
-              <span style="background:#E3A14E"></span>
-              <span style="background:#6F9E80"></span>
+      <!-- Card 3: Import Recipe -->
+      <div class="s3-card">
+        <span class="s3-clabel">Import Recipe</span>
+        <div class="s3-cvis">
+          <div class="url-stage">
+            <div class="url-bar">
+              <div class="url-dots">
+                <span style="background:#E8876B"></span>
+                <span style="background:#E3A14E"></span>
+                <span style="background:#6F9E80"></span>
+              </div>
+              <div class="url-text">seriouseats.com/tacos-al-pastor</div>
             </div>
-            <div class="url-text" id="urlText"></div>
-          </div>
-          <div class="url-recipe">
-            <p class="url-rtitle" id="urlRtitle"></p>
-            <div class="url-pills" id="urlPills"></div>
+            <div class="url-recipe">
+              <p class="url-rtitle">Tacos al Pastor</p>
+              <div class="url-pills">
+                <div class="url-pill">Pork</div>
+                <div class="url-pill">Pineapple</div>
+                <div class="url-pill">Chipotle</div>
+                <div class="url-pill">Onion</div>
+                <div class="url-pill">Lime</div>
+              </div>
+            </div>
           </div>
         </div>
+        <p class="s3-cdesc">Share a recipe link or photo. Miso reads it and saves the dish.</p>
       </div>
+
     </div>
+
+    <p class="s3-foot">Miso works without any of these. They're just nice to have.</p>
+
   </div>
-
-  <p class="s3-foot">Miso works without any of these. They're just nice to have.</p>
-
 </section>
 
 <!-- ══════════════════════════════════
@@ -1196,9 +1235,7 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
       <div class="cta2-badges">
         <!-- App Store -->
         <a href="#" class="cta2-badge">
-          <svg width="20" height="24" viewBox="0 0 814 1000" fill="currentColor" style="color:var(--cream)">
-            <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.5-150.3-93.5c-52.8-65.3-95.2-170.6-95.2-271.5 0-183.1 119.5-280.2 237.2-280.2 61.6 0 112.9 40.5 151.2 40.5 36.7 0 94.6-42.8 163.5-42.8 26.4 0 109.5 2.6 163.5 70.5zm-234.5-218.8c31.3-35.2 54.5-84.1 54.5-133 0-6.4-.6-12.9-1.9-18.1-51.5 1.9-112.3 34.4-149.2 74.4-28.2 31.3-55.1 80.2-55.1 129.7 0 7.1 1.3 14.2 1.9 16.5 3.2.6 8.4 1.3 13.5 1.3 46.5 0 102.5-31.3 136.3-70.8z"/>
-          </svg>
+          <svg width="20" height="24" viewBox="0 0 14 17" fill="currentColor" style="color:var(--cream)"><path d="M13.6 13.2c-.28.64-.57 1.23-.9 1.77-.47.67-.86 1.13-1.16 1.39-.46.43-1 .65-1.56.66-.4 0-.88-.11-1.43-.34-.56-.23-1.07-.34-1.54-.34-.49 0-1.01.11-1.58.34-.57.23-1.02.35-1.37.36-.53.02-1.08-.21-1.64-.68-.32-.28-.73-.76-1.21-1.44C1.23 14.07.74 13.1.38 12c-.39-1.17-.58-2.31-.58-3.4 0-1.26.27-2.34.81-3.25.43-.73.99-1.3 1.71-1.73.71-.43 1.48-.65 2.31-.66.45 0 1.04.14 1.78.41.73.27 1.2.41 1.4.41.16 0 .7-.16 1.61-.49.86-.3 1.59-.43 2.19-.39 1.62.13 2.84.76 3.63 1.9-.1.06-.18.12-.26.19-.44.33-.84.76-1.18 1.29-.34.53-.5 1.14-.5 1.83 0 .73.18 1.38.55 1.95.37.56.8.97 1.31 1.22-.1.28-.2.54-.3.79zM9.9.78c0 .57-.2 1.1-.58 1.59-.47.54-.99.85-1.59.9-.02-.06-.02-.13-.02-.2 0-.55.22-1.07.63-1.55.2-.24.46-.44.76-.6.3-.15.59-.24.86-.25.01.04.01.07.01.11H9.9z"/></svg>
           <div class="cta2-btx"><small>Download on the</small><strong>App Store</strong></div>
         </a>
         <!-- Google Play -->
@@ -1541,6 +1578,15 @@ function setFormation(n) {
         p.fy = cy + Math.sin(t * Math.PI * 2.5) * 44 + (((i*29)%32)-16);
         break;
       }
+      case 4: { // Structured grid — rows of particles
+        const cols = 8;
+        const col  = i % cols, row = Math.floor(i / cols);
+        const gw   = Math.min(W * 0.72, 720);
+        const rows = Math.ceil(count / cols);
+        p.fx = cx - gw/2 + col * (gw / (cols - 1));
+        p.fy = cy - 90 + row * (180 / Math.max(1, rows - 1));
+        break;
+      }
     }
   });
 }
@@ -1851,7 +1897,7 @@ function boot() {
       trigger: '#s2',
       pin: true,
       start: 'top top',
-      end: '+=300%',          // 4 panels × 75vh each = 300vh of scroll travel
+      end: '+=400%',          // 5 panels × 80vh each = 400vh of scroll travel
       anticipatePin: 1,
       onEnter:      () => { activateS2(); gsap.to(fProxy, { c: 1, duration: 1.3, ease: 'power2.inOut', onUpdate: () => { featureConv = fProxy.c; } }); },
       onLeave:      releaseParticles,
@@ -1885,97 +1931,22 @@ function boot() {
     }, { threshold: 0.3 }).observe(s2el);
   }
 
-  /* ── S3: AI Feature panels ── */
-  const aps       = Array.from(document.querySelectorAll('.ap'));
-  let curAP       = 0;
-  let lastS3Idx   = 0;
-  let rsTriggered = false;
-  let urlTriggered= false;
-
-  const rsChipEls = Array.from(document.querySelectorAll('.rs-chip'));
-
-  function triggerRSChips() {
-    if (rsTriggered) return;
-    rsTriggered = true;
-    rsChipEls.forEach((chip, i) => setTimeout(() => chip.classList.add('on'), 550 + i * 380));
-  }
-
-  function triggerURL() {
-    if (urlTriggered) return;
-    urlTriggered = true;
-    const urlEl   = document.getElementById('urlText');
-    const titleEl = document.getElementById('urlRtitle');
-    const pillsEl = document.getElementById('urlPills');
-    const urlStr  = 'seriouseats.com/tacos-al-pastor';
-    let ti = 0;
-    const typer = setInterval(() => {
-      if (urlEl) urlEl.textContent = urlStr.slice(0, ++ti);
-      if (ti >= urlStr.length) clearInterval(typer);
-    }, 38);
-    setTimeout(() => {
-      if (titleEl) { titleEl.textContent = 'Tacos al Pastor'; titleEl.classList.add('on'); }
-    }, 900);
-    ['Pork', 'Pineapple', 'Chipotle', 'Onion', 'Coriander', 'Lime', 'Tortillas'].forEach((name, idx) => {
-      setTimeout(() => {
-        if (!pillsEl) return;
-        const p = document.createElement('div');
-        p.className = 'url-pill';
-        p.textContent = name;
-        pillsEl.appendChild(p);
-        requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('on')));
-      }, 1100 + idx * 170);
-    });
-  }
-
-  function goToAP(n) {
-    if (n === curAP || n < 0 || n >= aps.length) return;
-    const from = aps[curAP], to = aps[n];
-    gsap.to(from, { opacity: 0, duration: .32, ease: 'power2.in', onComplete: () => {
-      from.classList.remove('ap--active');
-      to.classList.add('ap--active');
-      gsap.to(to, { opacity: 1, duration: .44, ease: 'power2.out' });
-      if (n === 1) triggerRSChips();
-      if (n === 2) triggerURL();
-    }});
-    curAP = n;
-  }
-
-  if (!isMobile) {
-    ScrollTrigger.create({
-      trigger: '#s3',
-      pin: true,
-      start: 'top top',
-      end: '+=200%',
-      anticipatePin: 1,
-      onEnter: () => {
-        if (!aps[0].classList.contains('ap--active')) {
-          aps[0].classList.add('ap--active');
-          gsap.to(aps[0], { opacity: 1, duration: .6, delay: .1 });
-        }
-      },
-      onLeaveBack: () => {
-        aps[curAP].classList.remove('ap--active');
-        gsap.to(aps[curAP], { opacity: 0, duration: .3 });
-      },
-      onEnterBack: () => {
-        aps[curAP].classList.add('ap--active');
-        gsap.to(aps[curAP], { opacity: 1, duration: .5 });
-      },
-      onUpdate: self => {
-        const idx = Math.min(aps.length - 1, Math.floor(self.progress * aps.length + 0.001));
-        if (idx !== lastS3Idx) { lastS3Idx = idx; goToAP(idx); }
+  /* ── S3: AI feature grid — reveal cards + chips on scroll ── */
+  const s3el    = document.getElementById('s3');
+  const s3Cards = s3el ? Array.from(s3el.querySelectorAll('.s3-card')) : [];
+  if (s3Cards.length) {
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        s3Cards.forEach((card, i) => {
+          setTimeout(() => {
+            card.classList.add('on');
+            card.querySelectorAll('.rs-chip').forEach((chip, j) =>
+              setTimeout(() => chip.classList.add('on'), 320 + j * 180)
+            );
+          }, i * 160);
+        });
       }
-    });
-  } else {
-    /* Mobile: all panels stacked, trigger special animations when in view */
-    const ap2el = document.getElementById('ap2');
-    const ap3el = document.getElementById('ap3');
-    if (ap2el) new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) triggerRSChips();
-    }, { threshold: 0.4 }).observe(ap2el);
-    if (ap3el) new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) triggerURL();
-    }, { threshold: 0.4 }).observe(ap3el);
+    }, { threshold: 0.15 }).observe(s3el);
   }
 
   /* ── Household: activity feed ── */

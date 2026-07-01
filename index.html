@@ -518,7 +518,134 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   color:rgba(245,240,234,.16);pointer-events:none;
 }
 
-/* ═══ S4 NERD / INTELLIGENCE ═══ */
+/* ═══ S4 HOUSEHOLD — THE TABLE ═══ */
+#s-hh{
+  position:relative;min-height:100vh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--dw);
+  padding:clamp(56px,9vh,100px) clamp(24px,6vw,80px);
+}
+#s-hh::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 45% 40% at 68% 52%,rgba(196,147,106,.07) 0%,transparent 65%);
+}
+.hh2-in{
+  width:100%;max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;gap:clamp(48px,7vw,110px);
+}
+.hh2-text{ flex:1;min-width:0; }
+.hh2-eye{
+  font-family:var(--sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--amber);margin:0 0 16px;
+  opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease;
+}
+.hh2-h{
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(32px,4.5vw,60px);color:var(--cream);
+  line-height:1.15;letter-spacing:-.01em;margin:0 0 22px;
+  opacity:0;transform:translateY(14px);transition:opacity .6s .1s ease,transform .6s .1s ease;
+}
+.hh2-h em{ color:var(--amber);font-style:inherit; }
+.hh2-body{
+  font-family:var(--sans);font-size:clamp(14px,1.35vw,16px);
+  color:rgba(245,240,234,.48);line-height:1.72;margin:0 0 22px;max-width:380px;
+  opacity:0;transform:translateY(10px);transition:opacity .6s .2s ease,transform .6s .2s ease;
+}
+.hh2-note{
+  font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(245,240,234,.2);margin:0;
+  opacity:0;transition:opacity .6s .34s ease;
+}
+.hh2-in.hh2--vis .hh2-eye,
+.hh2-in.hh2--vis .hh2-h,
+.hh2-in.hh2--vis .hh2-body,
+.hh2-in.hh2--vis .hh2-note{ opacity:1;transform:none; }
+.hh2-vis{
+  flex:0 0 clamp(260px,34vw,400px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(24px);
+  transition:opacity .8s .15s ease,transform .8s .15s ease;
+}
+.hh2-in.hh2--vis .hh2-vis{ opacity:1;transform:none; }
+
+/* Table */
+.tt-wrap{
+  position:relative;
+  width:clamp(220px,26vw,290px);
+  height:clamp(220px,26vw,290px);
+}
+.tt-table{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:78%;height:52%;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(196,147,106,.13) 0%,rgba(196,147,106,.05) 55%,transparent 80%);
+  border:1px solid rgba(196,147,106,.25);
+}
+.tt-dish{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--serif);font-style:italic;
+  font-size:clamp(12px,1.2vw,14px);color:var(--amber);
+  white-space:nowrap;letter-spacing:-.01em;
+  text-shadow:0 0 24px rgba(227,161,78,.45);
+  opacity:0;filter:blur(6px);
+  transition:opacity .65s ease,filter .65s ease;
+  pointer-events:none;
+}
+.tt-dish.on{ opacity:1;filter:blur(0); }
+.tt-seat{
+  position:absolute;
+  width:clamp(38px,4vw,46px);height:clamp(38px,4vw,46px);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--sans);font-size:clamp(11px,1.1vw,13px);font-weight:700;
+  border:1.5px solid;
+  opacity:0;
+  transition:opacity .4s ease,transform .45s cubic-bezier(.34,1.2,.64,1),box-shadow .5s ease;
+}
+.tt-check{
+  position:absolute;bottom:-3px;right:-3px;
+  width:15px;height:15px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:700;color:var(--black);
+  opacity:0;transform:scale(0) rotate(-20deg);
+  transition:opacity .3s ease,transform .45s cubic-bezier(.34,1.5,.64,1);
+}
+.tt-seat.tt-claimed .tt-check{ opacity:1;transform:scale(1) rotate(0); }
+
+.tt-s1{
+  top:0;left:50%;
+  transform:translate(-50%,-50%) scale(.8);
+  background:rgba(227,161,78,.12);border-color:rgba(227,161,78,.5);color:var(--amber);
+}
+.tt-s1.on{ transform:translate(-50%,-50%) scale(1); }
+.tt-s1.tt-claimed{ box-shadow:0 0 20px rgba(227,161,78,.22); }
+.tt-s1 .tt-check{ background:var(--amber); }
+.tt-s2{
+  right:0;top:50%;
+  transform:translate(50%,-50%) scale(.8);
+  background:rgba(232,135,107,.12);border-color:rgba(232,135,107,.5);color:var(--coral);
+}
+.tt-s2.on{ transform:translate(50%,-50%) scale(1); }
+.tt-s2.tt-claimed{ box-shadow:0 0 20px rgba(232,135,107,.22); }
+.tt-s2 .tt-check{ background:var(--coral); }
+.tt-s3{
+  bottom:0;left:50%;
+  transform:translate(-50%,50%) scale(.8);
+  background:rgba(111,158,128,.12);border-color:rgba(111,158,128,.5);color:var(--sage);
+}
+.tt-s3.on{ transform:translate(-50%,50%) scale(1); }
+.tt-s3.tt-claimed{ box-shadow:0 0 20px rgba(111,158,128,.22); }
+.tt-s3 .tt-check{ background:var(--sage); }
+.tt-s4{
+  left:0;top:50%;
+  transform:translate(-50%,-50%) scale(.8);
+  background:rgba(139,126,200,.12);border-color:rgba(139,126,200,.5);color:var(--lavender);
+}
+.tt-s4.on{ transform:translate(-50%,-50%) scale(1); }
+.tt-s4.tt-claimed{ box-shadow:0 0 20px rgba(139,126,200,.22); }
+.tt-s4 .tt-check{ background:var(--lavender); }
+
+/* ═══ S4 NERD / INTELLIGENCE (kept for orphaned CSS, HTML removed) ═══ */
 #s4{background:#0d0b08;padding:100px 48px;}
 .nerd-wrap{max-width:1040px;margin:0 auto;width:100%;}
 .eyebrow{
@@ -711,16 +838,12 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
   .ci-glow{ opacity:1!important;transition:none; }
   .s3-foot{ position:relative;bottom:auto;padding:8px 20px 36px; }
 
-  /* S4 — intelligence */
-  #s4{ padding:64px 20px; }
-  .nerd-grid,.scan-wrap{ grid-template-columns:1fr;gap:32px; }
-  .scan-vf{ margin:0 auto; }
-  .nerd-rule{ grid-template-columns:76px 1fr;gap:10px; }
-
-  /* S5 — household */
-  #s5{ padding:64px 20px; }
-  .hh-ph{ width:clamp(110px,26vw,155px); }
-  .hh-sync{ padding:0 8px; }
+  /* S4 — household table */
+  #s-hh{ padding:56px 20px 48px; min-height:auto; }
+  .hh2-in{ flex-direction:column;gap:32px; }
+  .hh2-vis{ flex:none;width:100%;opacity:1!important;transform:none!important; }
+  .hh2-eye,.hh2-h,.hh2-body,.hh2-note{ opacity:1!important;transform:none!important; }
+  .tt-wrap{ width:min(210px,65vw);height:min(210px,65vw); }
 
   /* S6 — CTA */
   .cta-pitch{ font-size:clamp(14px,3.8vw,18px); }
@@ -1040,77 +1163,30 @@ button,a{cursor:none;font:inherit;color:inherit;border:none;background:none;text
 </section>
 
 <!-- ══════════════════════════════════
-     S4 · THE INTELLIGENCE
+     S4 · HOUSEHOLD — THE TABLE
 ══════════════════════════════════ -->
-<section class="rm" id="s4" style="align-items:flex-start;justify-content:center;">
-  <div class="nerd-wrap">
-    <span class="eyebrow rv">Under the hood</span>
-    <h2 class="nerd-hl rv">Tapped = AI suggests a dish.<br>Empty = picked from your own dishes.</h2>
-    <div class="nerd-grid">
-      <div class="nerd-screen rv">
-        <img src="App%20Screenshots/Ai%20Slot%20Slection.png" alt="AI slot selection" loading="lazy">
-      </div>
-      <ul class="nerd-rules rv" style="transition-delay:.15s">
-        <li class="nerd-rule"><span class="nr-label">Stock-first</span><span class="nr-desc">Always choose a dish when its ingredients are stocked</span></li>
-        <li class="nerd-rule"><span class="nr-label">Leftovers</span><span class="nr-desc">Repeat a dish across the week — one cook, no waste</span></li>
-        <li class="nerd-rule"><span class="nr-label">Lock on pick</span><span class="nr-desc">Once chosen that week, locked — no duplicates</span></li>
-        <li class="nerd-rule"><span class="nr-label">Day filters</span><span class="nr-desc">Weekend-only or weekday-only dish assignments</span></li>
-        <li class="nerd-rule"><span class="nr-label">No repeats</span><span class="nr-desc">Never the same dish two weeks in a row</span></li>
-      </ul>
-    </div>
-    <p class="nerd-close rv" style="transition-delay:.25s">AI shows up exactly twice: scanning your receipt, and finding a recipe from a photo or link. The rest is just good logic.</p>
+<section id="s-hh">
+  <div class="hh2-in" id="hh2In">
 
-    <!-- Scan feature -->
-    <div class="scan-wrap">
-      <div class="scan-txt rv" style="transition-delay:.05s">
-        <span class="eyebrow">AI feature #1</span>
-        <h3>Receipt → pantry stock.</h3>
-        <p>Point your camera at a grocery receipt. Items populate your pantry automatically — no manual entry, always reviewable before saving.</p>
-      </div>
-      <div class="scan-vf rv" id="scanVf" style="transition-delay:.15s">
-        <div class="vc tl"></div><div class="vc tr"></div>
-        <div class="vc bl"></div><div class="vc br"></div>
-        <div class="vbeam"></div>
-        <div class="vdoc">
-          <div class="vline" style="width:100%"></div><div class="vline" style="width:72%"></div>
-          <div class="vline" style="width:55%"></div><div class="vline" style="width:88%"></div>
-          <div class="vline" style="width:40%"></div><div class="vline" style="width:76%"></div>
-          <div class="vline" style="width:90%"></div><div class="vline" style="width:60%"></div>
-        </div>
-        <div class="vchips" id="vchips">
-          <div class="vchip" id="vc1">Bok Choy <span>✓</span></div>
-          <div class="vchip" id="vc2">Salmon <span>✓</span></div>
-          <div class="vchip" id="vc3">Sushi Rice <span>✓</span></div>
-          <div class="vchip" id="vc4">Spring Onion <span>✓</span></div>
-        </div>
-      </div>
+    <div class="hh2-text">
+      <p class="hh2-eye">Your household</p>
+      <h2 class="hh2-h">Plan together.<br><em>Or not.</em></h2>
+      <p class="hh2-body">Add a partner, share your pantry, and let Miso plan for the whole table. Or keep it to yourself — every feature works either way.</p>
+      <p class="hh2-note">Up to 6 people · No subscription required to share</p>
     </div>
-  </div>
-</section>
 
-<!-- ══════════════════════════════════
-     S5 · HOUSEHOLD
-══════════════════════════════════ -->
-<section class="rm" id="s5">
-  <div class="hh-in">
-    <h2 class="hh-hl rv">One kitchen, shared.</h2>
-    <div class="hh-phones rv" style="transition-delay:.1s">
-      <div class="hh-ph hh-ph-a">
-        <img src="App%20Screenshots/Weekly%20menu.png" alt="Weekly menu" loading="lazy">
-      </div>
-      <div class="hh-sync">
-        <div class="sd"></div>
-        <div class="sl"></div>
-        <div class="sd"></div>
-      </div>
-      <div class="hh-ph hh-ph-b">
-        <img src="App%20Screenshots/Summary%20page.png" alt="Summary page" loading="lazy">
+    <div class="hh2-vis">
+      <div class="tt-wrap" id="ttWrap">
+        <div class="tt-table">
+          <div class="tt-dish" id="ttDish">Biryani Night</div>
+        </div>
+        <div class="tt-seat tt-s1" id="ttS0">A<div class="tt-check">✓</div></div>
+        <div class="tt-seat tt-s2" id="ttS1">J<div class="tt-check">✓</div></div>
+        <div class="tt-seat tt-s3" id="ttS2">M<div class="tt-check">✓</div></div>
+        <div class="tt-seat tt-s4" id="ttS3">K<div class="tt-check">✓</div></div>
       </div>
     </div>
-    <p class="hh-copy rv" style="transition-delay:.2s">
-      Family plan together or keep it all local.<br>
-      Every feature works without a sign-in.
-    </p>
+
   </div>
 </section>
 
@@ -1906,15 +1982,26 @@ function boot() {
     }, { threshold: 0.4 }).observe(ap3el);
   }
 
-  /* ── Scan viewfinder: auto-trigger on scroll ── */
-  let scanned = false;
-  const chips = ['vc1','vc2','vc3','vc4'];
-  new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !scanned) {
-      scanned = true;
-      chips.forEach((id, i) => setTimeout(() => document.getElementById(id)?.classList.add('on'), 900 + i * 420));
-    }
-  }, { threshold:.5 }).observe(document.getElementById('scanVf'));
+  /* ── Household: table animation ── */
+  const hh2In   = document.getElementById('hh2In');
+  const ttDish  = document.getElementById('ttDish');
+  const ttSeats = ['ttS0','ttS1','ttS2','ttS3'].map(id => document.getElementById(id));
+  let tableDone = false;
+
+  if (hh2In) {
+    new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting || tableDone) return;
+      tableDone = true;
+      hh2In.classList.add('hh2--vis');
+      ttSeats.forEach((seat, i) => {
+        if (seat) setTimeout(() => seat.classList.add('on'), 400 + i * 160);
+      });
+      if (ttDish) setTimeout(() => ttDish.classList.add('on'), 1080);
+      ttSeats.forEach((seat, i) => {
+        if (seat) setTimeout(() => seat.classList.add('tt-claimed'), 1580 + i * 460);
+      });
+    }, { threshold: 0.4 }).observe(hh2In);
+  }
 
   /* ── Footer 3D tilt ── */
   document.querySelectorAll('.fs').forEach(el => {
